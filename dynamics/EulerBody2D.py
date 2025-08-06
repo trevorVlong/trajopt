@@ -16,7 +16,7 @@
 import aerosandbox.numpy as np
 from typing import Union, Dict, Tuple, Callable, List
 from aerosandbox import Opti, OperatingPoint, Atmosphere
-from dynamics.RigidMotion.EulerBody2DNoMoment import EulerBody2D
+from dynamics.EulerBody2DNoMoment import EulerBody2D
 from aerosandbox import AeroSandboxObject
 from warnings import warn
 

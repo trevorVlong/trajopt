@@ -15,7 +15,7 @@
 
 import aerosandbox.numpy as np
 from typing import Union, Dict
-from dynamics.RigidMotion.EulerBody2D import Aicraft2D
+from dynamics.EulerBody2D import Aicraft2D
 from weather.WindModel2D import WindModel2D
 
 
@@ -40,16 +40,16 @@ class Aircraft2DPointMass(Aicraft2D):
 
     def __init__(self, mass: float = 1,
                  Iyy: float = 0,
-                 x_earth: Union[float, np.ndarray] = 0,  # earth x-position [m] in Earth Frame
-                 z_earth: Union[float, np.ndarray] = 0,  # earth z-position [m] in Earth Frame
-                 u_body: Union[float, np.ndarray] = 0,  # x-component of body velocity [m/s] in the Earth Frame
-                 w_body: Union[float, np.ndarray] = 0,  # z-component of body velocity [m/s] in the Earth Frame
-                 pitch: Union[float, np.ndarray] = 0,  # y-component of Euler angle sequence [deg] + pitch up from earth x-axis
-                 pitch_rate: Union[float, np.ndarray] = 0, # pitch rate [deg/s]
-                 flap_deflection: Union[float, np.ndarray] = 0,  # flap deflection  [deg] + down
-                 elevator_deflection: Union[float, np.ndarray] = 0,  # horizontal tail deflection [deg] + down
-                 throttle_position: Union[float, np.ndarray] = 0,  # throttle position [% from 0-1]
-                 air_density:Union[float,np.ndarray] = 0,  # temporary stand in
+                 x_earth: Union[float, np.ndarray] = np.zeros(1,),  # earth x-position [m] in Earth Frame
+                 z_earth: Union[float, np.ndarray] = np.zeros(1,),  # earth z-position [m] in Earth Frame
+                 u_body: Union[float, np.ndarray] = np.zeros(1,),  # x-component of body velocity [m/s] in the Earth Frame
+                 w_body: Union[float, np.ndarray] = np.zeros(1,),  # z-component of body velocity [m/s] in the Earth Frame
+                 pitch: Union[float, np.ndarray] = np.zeros(1,),  # y-component of Euler angle sequence [deg] + pitch up from earth x-axis
+                 pitch_rate: Union[float, np.ndarray] = np.zeros(1,), # pitch rate [deg/s]
+                 flap_deflection: Union[float, np.ndarray] = np.zeros(1,),  # flap deflection  [deg] + down
+                 elevator_deflection: Union[float, np.ndarray] = np.zeros(1,),  # horizontal tail deflection [deg] + down
+                 throttle_position: Union[float, np.ndarray] = np.zeros(1,),  # throttle position [% from 0-1]
+                 air_density:Union[float,np.ndarray] = np.zeros(1,),  # temporary stand in
                  windModel: WindModel2D = WindModel2D(),
                  ):
 
@@ -283,7 +283,17 @@ class Aircraft2DPointMass(Aicraft2D):
         # return AoA in deg
         return np.arctan2d(self.BodyZVelocity - w_g, self.BodyXVelocity - u_g)
 
+    def setVariables(self,
+                     variable_dict:dict,
+                     ) -> None:
+        """
+        sets state and control variables from a dictionary of inputs
+        """
+        for var, val in variable_dict.items():
+            self.__dict__[var] = val
 
 if __name__ == "__main__":
 
     dyn = Aircraft2DPointMass()
+
+    print(dyn.state.keys())

@@ -18,7 +18,7 @@ import aerosandbox.numpy as np
 import aerosandbox.optimization.opti as opti
 import matplotlib.pyplot as plt
 import seaborn as sns
-from dynamics.RigidMotion.Aircraft2D import Aircraft2DPointMass
+from dynamics.Aircraft2D import Aircraft2DPointMass
 from typing import Union
 
 sns.set_theme()
@@ -115,5 +115,6 @@ def visualizeRun2D(time,
 
     fig_dict["energy"] = (fig, ax)
     plt.legend()
+    plt.show()
 
     return fig_dict
