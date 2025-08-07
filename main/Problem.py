@@ -16,7 +16,7 @@ import aerosandbox
 from aerosandbox import Opti
 from aerosandbox import numpy as np
 from typing import Union
-from dynamics.Aircraft2D import Aircraft2DPointMass
+from dynamics import Aircraft2DPointMass
 
 
 class TrajectoryProblem2D():
@@ -39,7 +39,7 @@ class TrajectoryProblem2D():
         # properties related to the problem models
         self.PhysicsModel = None
         self.AeroModel = None
-        self.WindModel = None
+        self.__WindModel__ = None
 
         # other problem setup info
         self.Npoints = 100
@@ -49,6 +49,18 @@ class TrajectoryProblem2D():
         # variable container
         self.Variables = {}
         self.Time = 0
+
+    @property
+    def WindModel(self):
+        return self.__WindModel__
+
+    @WindModel.setter
+    def WindModel(self, model):
+        """
+        set wind model at multiple levels
+        """
+        self.__WindModel__ = model
+        self.PhysicsModel.WindModel = model
 
     def addDynamcis(self,
                         dynamics_model:Aircraft2DPointMass,

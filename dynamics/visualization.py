@@ -41,9 +41,11 @@ def visualizeRun2D(time,
 
     # velocity
     axes[0].plot(time,dyn.Airspeed,label="$V_\\infty$")
+    axes[0].plot(time, dyn.EarthXVelocity, label="groundspeed")
     axes[0].set_ylabel("$V_\\infty$ [m/s]",rotation=0)
     axes[0].yaxis.set_label_coords(-.15,0.5)
     axes[0].set_ylim([0,1.1*np.max(dyn.Airspeed)])
+    axes[0].legend()
 
 
     # pitch and angle of attack
@@ -115,6 +117,5 @@ def visualizeRun2D(time,
 
     fig_dict["energy"] = (fig, ax)
     plt.legend()
-    plt.show()
 
     return fig_dict
