@@ -4,9 +4,8 @@ from aerosandbox import numpy as np
 from aerodynamics.dragModelling import inducedDrag
 from aerodynamics.ThinAirfoilAnalytical2D import liftCoeffFlappedThinAirfoil,pitchCoeffFlappedThinAirfoil
 from aerodynamics.propulsorModels import scaledPropulsorPoint
-
 if TYPE_CHECKING:
-    from dynamics.RigidMotion.Aircraft2D import Aircraft2DPointMass
+    from dynamics.Aircraft2D import Aircraft2DPointMass
 
 
 class ThinAirfoilModel(AeroModel):
@@ -35,6 +34,14 @@ class ThinAirfoilModel(AeroModel):
 
         # engine
         self.PropulsorModel: callable = scaledPropulsorPoint(thrust_to_weight_ratio=0.4)
+
+        # store relationships for L,D,M ; cl,cd,cm
+        self.Lift = None
+        self.Drag = None
+        self.Moment = None
+        self.LiftCoeff = None
+        self.DragCoeff = None
+        self.MomentCoeff = None
 
     def tailDynamicsModel(self,
                           dynModel:"Aircraft2DPointMass",

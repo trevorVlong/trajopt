@@ -13,9 +13,9 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from main.Problem import TrajectoryProblem2D
+from problems import TrajectoryProblem2D
 from weather.WindModel2D import WindModel2D
-from aerodynamics.SimpleAircraft2D import ThinAirfoilModel
+from aerodynamics import ThinAirfoilModel
 from dynamics import Aircraft2DPointMass
 from aerosandbox import numpy as np
 from aerosandbox.numpy.integrate_discrete import integrate_discrete_squared_curvature as int_desc
@@ -78,7 +78,7 @@ def cruiseProblemTime(
                                                ),
         'Pitch': problem.Opti.variable(init_guess=init_guess,
                                        lower_bound=-45,
-                                       upper_bound=45,
+                                       upper_bound=540,
                                        ),
         'PitchRate': problem.Opti.variable(init_guess=init_guess,
                                            lower_bound=-20,
@@ -87,7 +87,7 @@ def cruiseProblemTime(
         'FlapPosition': problem.Opti.variable(init_guess=init_guess,
                                               lower_bound=0,
                                               upper_bound=50,
-                                              freeze=False,
+                                              freeze=True,
                                               ),
         'ElevatorPosition': problem.Opti.variable(init_guess=init_guess,
                                                   lower_bound=-20,
@@ -107,17 +107,16 @@ def cruiseProblemTime(
 
     # Initial Conditions
     problem.Opti.subject_to([
-        problem.PhysicsModel.Altitude[0] == 200,
+        problem.PhysicsModel.Altitude[0] == 800,
         problem.PhysicsModel.EarthXPosition[0] == 0,
         problem.PhysicsModel.PitchRate[0] == 0,
         problem.PhysicsModel.Pitch[0] >= 0,
-        problem.PhysicsModel.ThrottlePosition[0] == 0.4
     ])
 
     # Final Conditions
     problem.Opti.subject_to([
-        problem.PhysicsModel.Altitude[-1] == 250,
-        problem.PhysicsModel.Pitch[-1]**2 <= 4,
+        problem.PhysicsModel.Pitch[-30:] >= 350,
+        problem.PhysicsModel.PitchRate[-1] == 0,
 
     ])
 
@@ -132,7 +131,8 @@ def cruiseProblemTime(
     problem.Opti.subject_to([
         throttle_rate**2 <= 0.2,
         elev_rate**2 <= 225,
-        dyn.Airspeed < 15
+        problem.PhysicsModel.Altitude >= 50,
+        problem.PhysicsModel.Airspeed <= 30
     ])
 
 
@@ -146,7 +146,7 @@ def cruiseProblemTime(
 
     # cost function for the optimizer to work against
     problem.Opti.minimize(
-        1e-4 * np.sum(curv)
+        1e-3 * np.sum(curv)
     )
 
     # get solution
@@ -157,7 +157,7 @@ def cruiseProblemTime(
 
 if __name__=="__main__":
 
-    time_array = np.arange(0,20,.25)
+    time_array = np.arange(0,50,.5)
     problem = cruiseProblemTime(time_array)
 
     from dynamics.visualization import visualizeRun2D

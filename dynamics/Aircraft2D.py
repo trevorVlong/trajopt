@@ -15,11 +15,11 @@
 
 import aerosandbox.numpy as np
 from typing import Union, Dict
-from dynamics.EulerBody2D import Aicraft2D
+from dynamics import PointMass2D
 from weather.WindModel2D import WindModel2D
 
 
-class Aircraft2DPointMass(Aicraft2D):
+class Aircraft2DPointMass(PointMass2D):
     """
     Expansion of the Aircraft2D class which allows for arbitrary numbers of control on the flaps / motors. A
     point-mass representation of a 2-dimensional aircraft with arbitrary pitch/thrust control inputs for use in
@@ -89,43 +89,6 @@ class Aircraft2DPointMass(Aicraft2D):
         windModel.setParameters()
 
     @property
-    def state(self) -> Dict[str, Union[float, np.ndarray]]:
-        """
-        Property which returns the state vector consisting of:
-
-            earth x,z position (xe,ze) from arbitrarily chosen (x0,z0) point
-            Body velocities (ub, wb) which is the motion velocity within the air mass
-            pitch and pitch rate (theta, q) of the aircraft
-
-        The state is tracked in standard aircraft axes in 2D systems where
-        earth axes([ ]_e) are defined +x forward, +z downward
-        body axes ([ ]_b) are defined +x out nose, +z downward
-
-        The earth x,z position is relative to an arbitrary starting point. Note that in this formulation the +z is
-        'under' the ground and so a separate property Altitude has been provided to give the positive number.
-
-        The body velocity components u,w are the velocity of the point mass in the body frame and include
-        contributions from the motion of the vehicle in the air mass (u_motion, w_motion) as well as the speed of the
-        air mass (u_gust, w_gust). Thus,
-            u_body = u_inertial + u_gust
-            w_body = w_inertial + w_gust
-
-        The pitch and pitch rate are defined as + up which is contrary to the coordinate system of the body axes.
-        Methods in the rest of the class handle this discrepency. B
-
-        :return:
-        """
-        return {
-            "EarthXPosition": self.EarthXPosition, # x-position in [m/s] + forward
-            "EarthZPosition": self.EarthZPosition,  # z-position in [m/s] + down (use self.Altitude for position above
-            # ground)
-            "BodyXVelocity": self.BodyXVelocity,
-            "BodyZVelocity": self.BodyZVelocity,
-            "Pitch": self.Pitch,
-            "PitchRate": self.PitchRate
-        }
-
-    @property
     def control_variables(self) -> Dict[str, Union[float, np.ndarray]]:
         """
         Method to return dictionary of the control vector
@@ -140,20 +103,6 @@ class Aircraft2DPointMass(Aicraft2D):
             "ThrottlePosition": self.ThrottlePosition
         }
 
-    def state_derivatives(self) -> Dict[str, Union[float, np.ndarray]]:
-        """
-        Method to return dictionary of state vector derivatives
-        :return:
-        """
-        return {
-            "EarthXPosition": self.EarthXVelocity,
-            "EarthZPosition": self.EarthZVelocity,
-            "BodyXVelocity": self.AccelXBody,
-            "BodyZVelocity": self.AccelZBody,
-            "Pitch": self.PitchRate,
-            "PitchRate": self.PitchAccel
-        }
-
     @property
     def Altitude(self):
         """
@@ -162,21 +111,6 @@ class Aircraft2DPointMass(Aicraft2D):
         :return:
         """
         return -self.EarthZPosition
-
-    def add_moment(self,
-                  My: Union[float, np.ndarray] = 0,
-                  ) -> None:
-        """
-        Adds pitching moment in the body frame. In this frame +M is defined in the pitch-up direction and -M is
-        defined in the pitch down direction
-
-        :param My: pitching moment equation about reference point
-        :param axes: axis the moment is being applied on (in 2D this can be body always)
-        :return:
-        """
-
-        # sum element wise with existing property
-        self.My_b = self.My_b + My
 
     @property
     def glide_slope(self):

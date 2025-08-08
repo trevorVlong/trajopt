@@ -20,7 +20,6 @@ Contains surrogate models taken from Chris Courtin's Thesis, Appendices B&E. For
 """
 
 from aerosandbox import numpy as np
-from dynamics.AeroModelling.propulsorModels import deltaJetCoeffFromThrust
 
 
 def liftCoeff(alfa,delta_f,delta_cj):

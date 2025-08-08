@@ -17,6 +17,7 @@ from aerosandbox import Opti
 from aerosandbox import numpy as np
 from typing import Union
 from dynamics import Aircraft2DPointMass
+from matplotlib.pyplot import Figure,axis,axes
 
 
 class TrajectoryProblem2D():
@@ -44,10 +45,9 @@ class TrajectoryProblem2D():
         # other problem setup info
         self.Npoints = 100
         self.IndependentAxis: str = 'time'
-        self.IndependentValues: Union[float,np.ndarray] = np.zeros((self.Npoints,0))
+        self.IndependentValues: Union[float, np.ndarray] = np.zeros((self.Npoints, 0))
 
-        # variable container
-        self.Variables = {}
+        # variable containers for plotting / analysis in post
         self.Time = 0
 
     @property
@@ -63,9 +63,9 @@ class TrajectoryProblem2D():
         self.PhysicsModel.WindModel = model
 
     def addDynamcis(self,
-                        dynamics_model:Aircraft2DPointMass,
-                        aerodynamics_model
-                        ):
+                    dynamics_model: Aircraft2DPointMass,
+                    aerodynamics_model
+                    ):
         """
         Add dynamcis and aerodynamics models to the problem and set up containers for variables using state/control
         variable lists.
@@ -79,17 +79,6 @@ class TrajectoryProblem2D():
 
         self.AeroModel = aerodynamics_model
 
-    def setVariables(self,
-                     variables:dict[str,dict],
-                     ) -> None:
-        """
-        Sets up state and opti variables from incoming dict
-        """
-
-        for key,var_dict in variables.items():
-            for param, param_val in var_dict.items():
-                self.PhysicsModel.addVariables(optiVar)
-
     def constrainProblem(self,
                          method='cubic'):
         """
@@ -100,14 +89,14 @@ class TrajectoryProblem2D():
         # ========================================================================
         # constraint problem physics
         # get force, coefficient relationships using aerodynamics model
-        L,D,M = self.AeroModel.getForcesAndMoments(self.PhysicsModel)
-        cl,cd,cm = self.AeroModel.fullDynamicsModel(self.PhysicsModel)
+        L, D, M = self.AeroModel.getForcesAndMoments(self.PhysicsModel)
+        cl, cd, cm = self.AeroModel.fullDynamicsModel(self.PhysicsModel)
         thrust = self.AeroModel.thrustModel(self.PhysicsModel)
 
         # add forces and moments to constraints
 
         # aero forces
-        self.PhysicsModel.add_force(D,L,
+        self.PhysicsModel.add_force(D, L,
                                     from_axes='wind',
                                     )
         self.PhysicsModel.add_moment(M)
@@ -116,7 +105,7 @@ class TrajectoryProblem2D():
         self.PhysicsModel.add_force(thrust, 0,
                                     from_axes='body',
                                     )
-        self.PhysicsModel.add_moment(thrust*0.1)
+        self.PhysicsModel.add_moment(thrust * 0.1)
 
         # gravity
         self.PhysicsModel.add_force(0, self.PhysicsModel.Mass * 9.81,
@@ -128,16 +117,16 @@ class TrajectoryProblem2D():
 
         # for variable in state variable list
         # do add constraint
-        #elf.Opti.subject_to(constraint_in_list)
+        # elf.Opti.subject_to(constraint_in_list)
 
         # for variable in control variable list
         # do add constraint
 
         # finally, constraint derivatives using assigned method
         self.PhysicsModel.constrain_derivatives(self.Opti,
-                                                 self.Time,
-                                                 method=method,
-                                                 )
+                                                self.Time,
+                                                method=method,
+                                                )
 
     def solve(self,
               max_iter: int = 1000,
@@ -170,10 +159,58 @@ class TrajectoryProblem2D():
             self.Solution = sol(self.PhysicsModel)
             self.Time = sol(self.Time)
 
+    @property
+    def Variables(self):
+        """
+        returns value or combinations of all Opti.Variable combinations
+        """
+
+        return self.PhysicsModel.variables | self.AeroModel.variables
+
+    # def plotVariableTrace(self,
+    #                       variables: Union[str, list],
+    #                       linestyles: Union[str, list] = None,
+    #                       colors: Union[str, list] = None,
+    #                       markers: Union[str, list] = None,
+    #                       linewidths: Union[str, list] = None,
+    #                       markersizes: Union[str, list] = None,
+    #                       plot_initial_conditions: Union[bool, list] = True,
+    #                       plot_constraints: Union[bool, list] = True,
+    #                       overlay: bool = False,
+    #                       plot_name: str = 'newplot'
+    #                       ):
+    #     """
+    #     plot time and / or position traces of any variable asked for
+    #     """
+    #
+    #     # make sure variables and modifiers all have same length but if
+    #     numvars = len(variables)
+    #
+    #     if len(linestyles) != numvars and linestyles is not None: raise ValueError
+    #     if len(colors) != numvars and colors is not None: raise ValueError
+    #     if len(markers) != numvars and markers is not None: raise ValueError
+    #     if len(plot_initial_conditions) != numvars and plot_initial_conditions is not None: raise ValueError
+    #     if len(plot_constraints) != numvars and plot_constraints is not None: raise ValueError
+    #     if len(linewidths) != numvars and linewidths is not None: raise ValueError
+    #     if len(markersizes) != numvars and linewidths is not None: raise ValueError
+    #
+    #     # loop through and generate plots
+    #
+    #     # generate a new plot
+    #     for idx, variable in enumerate(variables):
+    #
+    #         if not overlay:
+    #             fig, ax = plotVariable(independentvar, dependentvar,
+    #                      )
+    #         else: fig,ax = plotVariable()
+    #
+    #     self.FigDict[f'{fig.}']
+
 
 if __name__ == "__main__":
     from weather.WindModel2D import WindModel2D
     from aerodynamics.SimpleAircraft2D import ThinAirfoilModel
+
     # set up models / containers
     problem = TrajectoryProblem2D()
     problem.PhysicsModel = Aircraft2DPointMass(
@@ -189,8 +226,8 @@ if __name__ == "__main__":
     problem.WindModel = WindModel2D()
     problem.AeroModel = ThinAirfoilModel()
     # add opti
-    N = 11
-    problem.Time = np.linspace(0,10,N)
+    N = 100
+    problem.Time = np.linspace(0, 100, N)
     init_guess = np.ones((N,))
     variables = {
         'EarthXPosition': problem.Opti.variable(init_guess=init_guess),
@@ -204,10 +241,10 @@ if __name__ == "__main__":
         'ThrottlePosition': problem.Opti.variable(init_guess=init_guess),
     }
     problem.PhysicsModel.setVariables(variables)
-
     problem.constrainProblem()
-
+    problem.Opti.subject_to(
+        [problem.PhysicsModel.Pitch[-1] >= 340]
+    )
     problem.solve()
 
     print('done')
-

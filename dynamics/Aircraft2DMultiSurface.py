@@ -15,11 +15,11 @@
 
 import aerosandbox.numpy as np
 from typing import Union, Dict
-from dynamics.RigidMotion.EulerBody2D import Aicraft2D
 from weather.WindModel2D import WindModel2D
+from dynamics import Aircraft2DPointMass
 
 
-class Aircraft2DPointMass(Aicraft2D):
+class Aircraft2DMultiSurface(Aircraft2DPointMass):
     """
     A point-mass representation of a 2-dimensional aircraft with arbitrary pitch/thrust control inputs for use in
     trajectory optimizaiton problems with wind disturbances
@@ -159,135 +159,6 @@ class Aircraft2DPointMass(Aicraft2D):
             "Pitch": self.PitchRate,
             "PitchRate": self.PitchAccel
         }
-
-    @property
-    def Altitude(self):
-        """
-        Altitude in [m] as a positive number since earth position is defined as + down and - up. Only applies the -1
-        transformation in the vertical earth direction and returns
-        :return:
-        """
-        return -self.EarthZPosition
-
-    def add_moment(self,
-                  My: Union[float, np.ndarray] = 0,
-                  ) -> None:
-        """
-        Adds pitching moment in the body frame. In this frame +M is defined in the pitch-up direction and -M is
-        defined in the pitch down direction
-
-        :param My: pitching moment equation about reference point
-        :param axes: axis the moment is being applied on (in 2D this can be body always)
-        :return:
-        """
-
-        # sum element wise with existing property
-        self.My_b = self.My_b + My
-
-    @property
-    def glide_slope(self):
-        """
-        glide slope of the body defined as the arctan of vertical speed in earth frame over horizontal speed in earth
-         frame, with positive down by convention
-        :return:
-        """
-        return np.arctan2d(self.EarthZVelocity, self.EarthXVelocity)
-
-    @property
-    def WingAspectRatio(self):
-        """
-        get the wing aspect ratio from geometric information. Uses the general AR = b^2 / S formulation
-        :return:
-        """
-
-        return self.Span**2 / self.Area
-
-    @property
-    def TailAspectRatio(self):
-        """
-        get the tail aspect ratio from geometric information. Uses the general AR = b^2 / S formulation
-        :return:
-        """
-
-        return self.TailSpan ** 2 / self.TailArea
-
-    def gustVelocity(self,
-                     x_earth:Union[float,np.ndarray] = None,
-                     altitude:Union[float,np.ndarray] = None,
-                     to_axes='earth'
-                     ):
-        """
-        Returns the gust velocity at the field point (x_earth, altitude) in specified axes. User can
-        :param x_earth:
-        :param z_earth:
-        :return:
-        """
-        if x_earth is None:
-            x_earth = self.EarthXPosition
-        elif altitude is None:
-            altitude = self.Altitude
-
-        gust_x, gust_z, gust_z = self.WindModel.windSpeed(x_earth,altitude,np.zeros(x_earth.shape))
-        u_gust, w_gust = self.convert_axes(gust_x,gust_z,from_axes='earth',to_axes=to_axes)
-
-        return u_gust, w_gust
-
-    @property
-    def DynamicPressure(self):
-        """
-        Returns array containing dynamic pressure equations of the problem / values of the solution in SI
-        [N/m^2]. Includes the velocity associated with gusts (see self.Airspeed for details)
-
-        qinf = 1/2 * air_density * V_TAS^2
-        :return:
-        """
-
-        return 0.5 * self.Airspeed**2 * self.AirDensity
-
-    @property
-    def Airspeed(self):
-        """
-        returns the true airspeed of the point mass which in this formulation is the body velocity + gust velocity at
-        the point. Does not take into account any compressibility or corrected airspeed effects.
-
-        VTAS = airspeed velocity vector in aircraft frame
-        Vb = body velocity vector in body axes in the earth frame
-        Vgust = gust velocity vector in earth coords in the earth frame
-        Teb = rotation tensor from earth to body coords
-        []_b = body components of []
-
-        |VTAS| = |Vb - Teb*Vgust|
-        |VTAS| = sqrt( (u_b-u_gb)^2 + (w_b - w_gb)^2 )
-
-        intuitively this makes sense if you consider that if one flies into a unit step-function of tailwind in the
-        moment before you enter the tailwind you see x-velocity component u, the moment after you enter your airspeed
-         has decreased by u_g but you speed in the earth frame remains u_b while the airspeed decreases by u_g
-        :return:
-        """
-
-        # unpack useful values
-        u_b = self.BodyXVelocity  # body x-velocity without gust present
-        w_b = self.BodyZVelocity  # body z-velocity without gust present
-        u_g,w_g = self.gustVelocity(self.EarthXPosition, self.Altitude, 'body')  # get gust velocity in body axes
-
-        # return airspeed which is: V_b - V_g
-        return np.sqrt((u_b-u_g)**2 + (w_b-w_g)**2)
-
-    @property
-    def Alpha(self) -> Union[float, np.ndarray]:
-        """
-        Property which returns Angle of Attack in [deg] using body velocity components and gust velocities. The
-        following equation is defined in the body frame
-
-        AoA = arctan((wb-wg)/(ub-ug))
-
-        :return:
-        """
-        # get gust velocity
-        u_g,w_g = self.gustVelocity(self.EarthXPosition, self.Altitude, to_axes='body')  # get gust velocity in body
-
-        # return AoA in deg
-        return np.arctan2d(self.BodyZVelocity - w_g, self.BodyXVelocity - u_g)
 
 
 if __name__ == "__main__":
