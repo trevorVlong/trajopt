@@ -13,17 +13,16 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import aerosandbox
 import matplotlib.pyplot as plt
-from typing import Union,List
+from typing import Union, List,TYPE_CHECKING
 from aerosandbox import numpy as np
 import casadi as cas
 
 
-class ProblemVariable:
+class Variable:
     """
-    Structured data class used to manage setup and execution of setting up asb.Opti() variables. Keeps track of
-    initial / end states, limits, constraints, and uses these to make
+    Structured data class used to make generating aerosandbox.Opti() variables a little more streamlined for
+    trajectory optimizaiton problem.
     """
 
     def __init__(self,
@@ -52,64 +51,6 @@ class ProblemVariable:
         self.UpperLimit = upper_limit
         self.Constraints = constraints
 
-    def setOptiVar(self,
-                   opti: aerosandbox.Opti,
-                   _stacklevel: int = 1,
-                   ):
-        """
-        Create an opti.variable with defined
-        """
-
-        if self.InitialGuess is None:
-            raise ValueError(f"An initial guess is required to initialize opti variables")
-
-        for key, value in self.__dict__.items():
-            if value is None:
-                if key == 'LowerLimit':
-                    self.LowerLimit = -999
-                    raise Warning('Lower limit for variable set to -999 without user input')
-                if key == 'UpperLimit':
-                    self.UpperLimit = 999
-                    raise Warning('Upper limit for variable set to 999 without user input')
-
-        return opti.variable(
-            init_guess=self.InitialGuess,
-            upper_bound=self.UpperLimit,
-            lower_bound=self.LowerLimit,
-        )
-
-    def plot(self,
-             independent_var: Union[float,np.ndarray],
-             constraints: bool = False,
-             limits: bool = False,
-             boundary_conditions: bool = False,
-             fig: Union[plt.Figure, None] = None,
-             **plot_options
-             ):
-        """
-        plot a trace of this variable against the array fed in
-        """
-
-        # =======================================================
-        # default values for certain params
-
-        if 'linewidth' not in plot_options.keys():
-            plot_options['linewidth'] = 1.5
-
-
-        # =======================================================
-        # generate plot
-        if fig is None:
-            fig = plt.figure()
-            plt.grid()
-        line = plt.plot(
-            independent_var, self.Value,
-            label=self.Name,
-            **plot_options
-        )
-
-        return fig, line
-
 
 if __name__ == "__main__":
 
@@ -117,11 +58,11 @@ if __name__ == "__main__":
     t = np.linspace(0,10,N)
     default_val = np.ones((N,))
 
-    var = ProblemVariable(
+    var = Variable(
         name='var1',
         initial_guess=default_val
     )
-    var2 = ProblemVariable(
+    var2 = Variable(
         name='var2',
         initial_guess= 2*default_val
     )

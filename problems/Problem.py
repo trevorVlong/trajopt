@@ -15,14 +15,12 @@ import aerosandbox
 
 from aerosandbox import Opti
 from aerosandbox import numpy as np
-from typing import Union, List, Dict, Callable, Any
+from typing import Union, List, Dict, Callable, Any, TYPE_CHECKING
 from dynamics import Aircraft2DPointMass
-from matplotlib.pyplot import Figure,axis,axes
-import casadi as cas
 from weather import WindModel2D
 from dynamics import PointMass2D
 from copy import deepcopy
-
+import casadi as cas
 
 class AircraftTrajectoryProblem2D(Opti):
     """
@@ -70,14 +68,13 @@ class AircraftTrajectoryProblem2D(Opti):
         # solution storage
         self.LastSolution = None
         self.CurrentSolution = None
+        self.Variables = None
 
     def initializeProblem(self,
                           dynamics_model,
                           time: Union[Union[float, np.ndarray]],
                           rigid_motion_model: Union[None, PointMass2D, Aircraft2DPointMass],
                           initial_guesses:Union[None, Dict] = None,
-                          upper_bounds:Union[None, Dict[str, float]] = None,
-                          lower_bounds:Union[None, Dict[str, float]] = None,
                           ):
         """
         Configure the problem using a dynamics model and a rigid motion model.
@@ -90,34 +87,19 @@ class AircraftTrajectoryProblem2D(Opti):
 
         # set up initial guesses for all optimization variables
         self.Time = time
+        default_limits = self.PhysicsModel.defaultVariableConfiguration
         for var_name in self.PhysicsModel._OptiVars.keys():
-
-            # logic for setting bounds
-            if upper_bounds is not None:
-                if var_name in upper_bounds.keys():
-                    upper_bound = upper_bounds[var_name]
-                else:
-                    upper_bound = None
-            else:
-                upper_bound = None
-
-            if lower_bounds is not None:
-                if var_name in lower_bounds.keys():
-                    lower_bound = lower_bounds[var_name]
-                else:
-                    lower_bound = None
-            else:
-                lower_bound = None
-
+            limits = default_limits[var_name]
             if initial_guesses is None:
                 setattr(self.PhysicsModel,
                         var_name,
                         self.variable(
                             init_guess=np.ones(time.shape),
-                            upper_bound=upper_bound,
-                            lower_bound=lower_bound
+                            upper_bound=limits.UpperLimit,
+                            lower_bound=limits.LowerLimit
                         )
                 )
+
 
     def addDynamcis(self,
                     dynamics_model: Aircraft2DPointMass,
@@ -185,14 +167,6 @@ class AircraftTrajectoryProblem2D(Opti):
                                                 method=method,
                                                 )
 
-    @property
-    def Variables(self):
-        """
-        returns value or combinations of all Opti.Variable combinations
-        """
-
-        return self.PhysicsModel.variables | self.AeroModel.variables
-
     def solve(self,
               parameter_mapping: Dict[cas.MX, float] = None,
               max_iter: int = 2000,
@@ -224,7 +198,6 @@ class AircraftTrajectoryProblem2D(Opti):
         # not always be the case that you want to run this in a sweep
         self.CurrentSolution = sol
         self.set_initial_from_sol(self.CurrentSolution)
-
 
 if __name__ == "__main__":
     from aerodynamics.SimpleAircraft2D import ThinAirfoilModel

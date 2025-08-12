@@ -61,10 +61,13 @@ def cruiseProblemTime(
         rigid_motion_model=PhysicsModel,
         time=time_array
     )
+    # ======
+    # general constraints for each variable which I'll include in a setup file later
+    dyn = problem.PhysicsModel
 
     # =================================================================================
     # set problem constraints
-    dyn = problem.PhysicsModel
+
 
     # Initial Conditions
     problem.subject_to([
