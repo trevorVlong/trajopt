@@ -13,7 +13,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from problems import TrajectoryProblem2D
+from problems import AircraftTrajectoryProblem2D as trajp
 from weather.WindModel2D import WindModel2D
 from aerodynamics import ThinAirfoilModel
 from dynamics import Aircraft2DPointMass
@@ -24,99 +24,62 @@ from typing import Union
 
 def cruiseProblemTime(
         time_array: Union[float,np.ndarray]
-) -> TrajectoryProblem2D:
+) -> trajp:
     """
     example setup of a cruise problem with a vertical gust
     """
     Npoints = len(time_array)
     # initialize problem, add models
-    problem = TrajectoryProblem2D()
+    problem = trajp()
 
     # set up models / containers
-    problem.PhysicsModel = Aircraft2DPointMass(
+    PhysicsModel = Aircraft2DPointMass(
         mass=9,
         Iyy=2,
     )
     # geometry info (still working to make this cleaner)
-    problem.PhysicsModel.Span = 3.05
-    problem.PhysicsModel.ChordMean = 0.38
-    problem.PhysicsModel.TailSpan = 1.27
-    problem.PhysicsModel.TailChordMean = 0.25
-    problem.PhysicsModel.Area = 1.09
-    problem.PhysicsModel.TailArea = 0.2
-    problem.WindModel = WindModel2D()
-    problem.AeroModel = ThinAirfoilModel()
+    PhysicsModel.Span = 3.05
+    PhysicsModel.ChordMean = 0.38
+    PhysicsModel.TailSpan = 1.27
+    PhysicsModel.TailChordMean = 0.25
+    PhysicsModel.Area = 1.09
+    PhysicsModel.TailArea = 0.2
+    AeroModel = ThinAirfoilModel()
 
     # wind model setup (simple gust)
     problem.WindModel.setParameters(model_name='gaussian1D',
                                     **{'STD': 20,
                                        'center': 100,
-                                       'MaxGustVelocity': 0,
+                                       'MaxGustVelocity': -5,
                                        'axis': 'z'}
                                     )
 
 
     # set state vars
-    problem.Time = time_array
-    init_guess = np.ones((Npoints,))
-    variables = {
-        'EarthXPosition': problem.Opti.variable(init_guess=init_guess,
-                                                lower_bound=0,
-                                                upper_bound=1e5,
-                                                ),
-        'EarthZPosition': problem.Opti.variable(init_guess=init_guess,
-                                                upper_bound=0,
-                                                lower_bound=-1e5,
-                                                ),
-        'BodyXVelocity': problem.Opti.variable(init_guess=init_guess,
-                                               lower_bound=0,
-                                               upper_bound=1e2,
-                                               ),
-        'BodyZVelocity': problem.Opti.variable(init_guess=init_guess,
-                                               lower_bound=-1e1,
-                                               upper_bound=1e1,
-                                               ),
-        'Pitch': problem.Opti.variable(init_guess=init_guess,
-                                       lower_bound=-45,
-                                       upper_bound=540,
-                                       ),
-        'PitchRate': problem.Opti.variable(init_guess=init_guess,
-                                           lower_bound=-20,
-                                           upper_bound=20,
-                                           ),
-        'FlapPosition': problem.Opti.variable(init_guess=init_guess,
-                                              lower_bound=0,
-                                              upper_bound=50,
-                                              freeze=True,
-                                              ),
-        'ElevatorPosition': problem.Opti.variable(init_guess=init_guess,
-                                                  lower_bound=-20,
-                                                  upper_bound=20,
-                                                  ),
-        'ThrottlePosition': problem.Opti.variable(init_guess= 0.5*init_guess,
-                                                  lower_bound=0,
-                                                  upper_bound=1,
-                                                  freeze=False
-                                                  ),
-    }
-    problem.PhysicsModel.setVariables(variables)
+    problem.initializeProblem(
+        dynamics_model=AeroModel,
+        rigid_motion_model=PhysicsModel,
+        time=time_array
+    )
 
     # =================================================================================
     # set problem constraints
     dyn = problem.PhysicsModel
 
     # Initial Conditions
-    problem.Opti.subject_to([
-        problem.PhysicsModel.Altitude[0] == 800,
+    problem.subject_to([
+        problem.PhysicsModel.Altitude[0] == 200,
         problem.PhysicsModel.EarthXPosition[0] == 0,
         problem.PhysicsModel.PitchRate[0] == 0,
-        problem.PhysicsModel.Pitch[0] >= 0,
+        problem.PhysicsModel.Airspeed[0] == 18,
+        problem.PhysicsModel.Alpha[0] >= 0
+
     ])
 
     # Final Conditions
-    problem.Opti.subject_to([
-        problem.PhysicsModel.Pitch[-30:] >= 350,
+    problem.subject_to([
         problem.PhysicsModel.PitchRate[-1] == 0,
+        problem.PhysicsModel.Altitude[-1] == 200,
 
     ])
 
@@ -128,11 +91,11 @@ def cruiseProblemTime(
     throttle_rate = dThrottle/dTime
     elev_rate = dElevator/dTime
 
-    problem.Opti.subject_to([
+    problem.subject_to([
         throttle_rate**2 <= 0.2,
         elev_rate**2 <= 225,
         problem.PhysicsModel.Altitude >= 50,
-        problem.PhysicsModel.Airspeed <= 30
+        problem.PhysicsModel.Airspeed <= 30,
     ])
 
 
@@ -145,37 +108,30 @@ def cruiseProblemTime(
     curv = int_desc(dyn.ElevatorPosition, problem.Time) + int_desc(dyn.ThrottlePosition, problem.Time)
 
     # cost function for the optimizer to work against
-    problem.Opti.minimize(
+    problem.minimize(
         1e-3 * np.sum(curv)
+        + np.sum((dyn.Altitude[0] - dyn.Altitude[1:])**2)
     )
 
     # get solution
-    problem.solve(max_iter=2000)
+    problem.solve(max_iter=1000)
 
     return problem
 
 
 if __name__=="__main__":
 
-    time_array = np.arange(0,50,.5)
+    time_array = np.arange(0,25,.2)
     problem = cruiseProblemTime(time_array)
 
     from dynamics.visualization import visualizeRun2D
     import matplotlib.pyplot as plt
 
     fig_dict = visualizeRun2D(problem.Time,
-                              problem.Solution
+                              problem.CurrentSolution(problem.PhysicsModel)
                               )
 
-    cl,cd,cm = problem.AeroModel.fullDynamicsModel(problem.Solution)
-
-    plt.figure()
-
-    plt.plot(problem.Time,problem.Solution.BodyXVelocity,label='x')
-    plt.plot(problem.Time, problem.Solution.BodyZVelocity,label='z')
-    plt.plot(problem.Time,cl)
-    print(cl)
-    plt.legend()
+    # cl,cd,cm = problem.AeroModel.fullDynamicsModel(problem.Solution)
     plt.show()
 
 

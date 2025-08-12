@@ -14,34 +14,46 @@
 # SOFTWARE.
 
 import aerosandbox
+import matplotlib.pyplot as plt
+from typing import Union,List
+from aerosandbox import numpy as np
+import casadi as cas
 
 
-class OptiStateVariable:
+class ProblemVariable:
     """
     Structured data class used to manage setup and execution of setting up asb.Opti() variables. Keeps track of
     initial / end states, limits, constraints, and uses these to make
     """
 
-    def __init__(self):
-        self.Name = None
-        self.Type = None
-        self.Value = None
-        self.InitialGuess = None
-        self.LowerLimit = None
-        self.UpperLimit = None
-        self.InitialCondition = None
-        self.EndCondition = None
-        self.Constraints = None
+    def __init__(self,
+                 name: str = 'default_variable',
+                 variable_type: str = 'default',
+                 initial_guess: Union[float, np.ndarray] = 0,
+                 initial_condition: Union[float, None] = None,
+                 end_condition: Union[float, None] = None,
+                 lower_limit: Union[float, None] = None,
+                 upper_limit: Union[float, None] = None,
+                 constraints: Union[cas.MX, None, List[cas.MX]] = None
+                 ):
+
+        # Identifying information
+        self.Name: str = name
+        self.Type = variable_type
+
+        # bondary and initial conditions
+        self.Value = initial_guess
+        self.InitialGuess = initial_guess
+        self.InitialCondition = initial_condition
+        self.EndCondition = end_condition
+
+        # limits and constraints
+        self.LowerLimit = lower_limit
+        self.UpperLimit = upper_limit
+        self.Constraints = constraints
 
     def setOptiVar(self,
                    opti: aerosandbox.Opti,
-                   n_vars: int = None,
-                   scale: float = None,
-                   freeze: bool = False,
-                   log_transform: bool = False,
-                   category: str = "Uncategorized",
-                   lower_bound: float = None,
-                   upper_bound: float = None,
                    _stacklevel: int = 1,
                    ):
         """
@@ -51,7 +63,7 @@ class OptiStateVariable:
         if self.InitialGuess is None:
             raise ValueError(f"An initial guess is required to initialize opti variables")
 
-        for key,value in self.__dict__.items():
+        for key, value in self.__dict__.items():
             if value is None:
                 if key == 'LowerLimit':
                     self.LowerLimit = -999
@@ -66,3 +78,58 @@ class OptiStateVariable:
             lower_bound=self.LowerLimit,
         )
 
+    def plot(self,
+             independent_var: Union[float,np.ndarray],
+             constraints: bool = False,
+             limits: bool = False,
+             boundary_conditions: bool = False,
+             fig: Union[plt.Figure, None] = None,
+             **plot_options
+             ):
+        """
+        plot a trace of this variable against the array fed in
+        """
+
+        # =======================================================
+        # default values for certain params
+
+        if 'linewidth' not in plot_options.keys():
+            plot_options['linewidth'] = 1.5
+
+
+        # =======================================================
+        # generate plot
+        if fig is None:
+            fig = plt.figure()
+            plt.grid()
+        line = plt.plot(
+            independent_var, self.Value,
+            label=self.Name,
+            **plot_options
+        )
+
+        return fig, line
+
+
+if __name__ == "__main__":
+
+    N = 10
+    t = np.linspace(0,10,N)
+    default_val = np.ones((N,))
+
+    var = ProblemVariable(
+        name='var1',
+        initial_guess=default_val
+    )
+    var2 = ProblemVariable(
+        name='var2',
+        initial_guess= 2*default_val
+    )
+
+    fig,line = var.plot(t)
+    fig,newline = var2.plot(t,
+                            fig=fig
+                            )
+
+    plt.legend()
+    plt.show()

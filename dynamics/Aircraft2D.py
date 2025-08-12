@@ -17,6 +17,7 @@ import aerosandbox.numpy as np
 from typing import Union, Dict
 from dynamics import PointMass2D
 from weather.WindModel2D import WindModel2D
+import casadi as cas
 
 
 class Aircraft2DPointMass(PointMass2D):
@@ -98,6 +99,24 @@ class Aircraft2DPointMass(PointMass2D):
             "Fx_b": self.Fx_b,
             "Fz_b": self.Fz_b,
             "My_b": self.My_b,
+            "FlapPosition": self.FlapPosition,
+            "ElevatorPosition": self.ElevatorPosition,
+            "ThrottlePosition": self.ThrottlePosition
+        }
+
+    @property
+    def _OptiVars(self) -> Dict[str,Union[float, cas.MX]]:
+        """
+        returns a dict containting the name/value pairs for all assumed opti-variables
+        """
+
+        return {
+            "EarthXPosition": self.EarthXPosition,
+            "EarthZPosition": self.EarthZPosition,
+            "BodyXVelocity": self.BodyXVelocity,
+            "BodyZVelocity": self.BodyZVelocity,
+            "Pitch": self.Pitch,
+            "PitchRate": self.PitchRate,
             "FlapPosition": self.FlapPosition,
             "ElevatorPosition": self.ElevatorPosition,
             "ThrottlePosition": self.ThrottlePosition
