@@ -184,16 +184,7 @@ class AircraftTrajectoryProblem2D(Opti):
                                     )
 
         # ========================================================================
-        # add problem constraints (start/end conditions, constraints on variables, etc)
-
-        # for variable in state variable list
-        # do add constraint
-        # elf.Opti.subject_to(constraint_in_list)
-
-        # for variable in control variable list
-        # do add constraint
-
-        # finally, constraint derivatives using assigned method
+        # finally, constrain derivatives using assigned method
         self.PhysicsModel.constrain_derivatives(self,
                                                 self.Time,
                                                 method=method,

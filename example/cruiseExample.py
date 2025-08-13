@@ -19,10 +19,14 @@ from aerodynamics import ThinAirfoilModel
 from dynamics import Aircraft2DPointMass
 from aerosandbox import numpy as np
 from aerosandbox.numpy.integrate_discrete import integrate_discrete_squared_curvature as int_desc
-from typing import Union
+from typing import Union,TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from problems import AircraftTrajectoryProblem2D
 
 
 def cruiseProblemTime(
+        problem,
         time_array: Union[float,np.ndarray],
         gust_model_velocity: float = 0,
 ) -> trajp:
@@ -30,7 +34,6 @@ def cruiseProblemTime(
     example setup of a cruise problem with a vertical gust
     """
     # initialize problem, add models
-    problem = trajp()
 
     # set up models / containers
     PhysicsModel = Aircraft2DPointMass(
