@@ -23,12 +23,12 @@ from typing import Union
 
 
 def cruiseProblemTime(
-        time_array: Union[float,np.ndarray]
+        time_array: Union[float,np.ndarray],
+        gust_model_velocity: float = 0,
 ) -> trajp:
     """
     example setup of a cruise problem with a vertical gust
     """
-    Npoints = len(time_array)
     # initialize problem, add models
     problem = trajp()
 
@@ -51,7 +51,7 @@ def cruiseProblemTime(
     wind_model.setParameters(model_name='gaussian1D',
                                     **{'STD': 20,
                                        'center': 50,
-                                       'MaxGustVelocity': -6,
+                                       'MaxGustVelocity': -gust_model_velocity,
                                        'axis': 'z'}
                                     )
 
@@ -73,16 +73,19 @@ def cruiseProblemTime(
 
     # =================================================================================
     # set problem constraints
-
-    # constrain dynamics
     problem.constrainProblem()
+    # constrain dynamics
+
 
     # Initial Conditions
     problem.subject_to([
         problem.PhysicsModel.Altitude[0] == 200,
         problem.PhysicsModel.EarthXPosition[0] == 0,
         problem.PhysicsModel.PitchRate[0] == 0,
-        problem.PhysicsModel.Airspeed[0] >= 17,
+        problem.PhysicsModel.Airspeed[0] >= 10,
+        problem.PhysicsModel.AccelXBody[0] == 0,
+        problem.PhysicsModel.AccelZBody[0] == 0,
+        problem.PhysicsModel.Pitch[0]**2 <= 36
     ])
 
     # Final Conditions
@@ -91,6 +94,7 @@ def cruiseProblemTime(
         (problem.PhysicsModel.Altitude[-1] - problem.PhysicsModel.Altitude[0])**2 <= 100,
         problem.PhysicsModel.AccelXBody[0] == 0,
         problem.PhysicsModel.AccelZBody[0] == 0,
+        problem.PhysicsModel.Pitch[-1] ** 2 <= 36
 
     ])
 
@@ -118,21 +122,19 @@ def cruiseProblemTime(
 
     # cost function for the optimizer to work against
     problem.minimize(
-        1e-3 * np.sum(curv)
-        + np.sum((dyn.Altitude[0]-dyn.Altitude[1:])**2 / 1e4),
+        1e-4 * np.sum(curv)
+        + np.sum((dyn.Altitude[0]-dyn.Altitude[1:])**2 / 1e2),
 
     )
-
-    # get solution
-    problem.solve(max_iter=3000)
 
     return problem
 
 
 if __name__=="__main__":
 
-    time_array = np.arange(0,20,.2)
+    time_array = np.arange(0,10,.10)
     problem = cruiseProblemTime(time_array)
+    problem.solve()
 
     from dynamics.visualization import visualizeRun2D
     import matplotlib.pyplot as plt
