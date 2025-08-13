@@ -21,6 +21,10 @@ from weather import WindModel2D
 from dynamics import PointMass2D
 from copy import deepcopy
 import casadi as cas
+from aerodynamics import ThinAirfoilModel
+
+if TYPE_CHECKING:
+    from problems import Variable
 
 class AircraftTrajectoryProblem2D(Opti):
     """
@@ -68,37 +72,65 @@ class AircraftTrajectoryProblem2D(Opti):
         # solution storage
         self.LastSolution = None
         self.CurrentSolution = None
-        self.Variables = None
+        self.Variables: dict[str, Variable] = dict()
+
+    def updateModels(self,
+                  aero_model: ThinAirfoilModel,
+                  rigid_motion_model: Union[PointMass2D, Aircraft2DPointMass],
+                wind_model: WindModel2D,
+                  ):
+        """
+        upload sub-models to the problem and perform configuration tasks based on those models
+        """
+
+        # clear variable and model tracking
+        self.Variables = {}
+        self.AeroModel = None
+        self.PhysicsModel = None
+
+        # add aero model, update tracked variables
+        self.AeroModel = aero_model
+        self.Variables = self.Variables | {} #TODO add .Variables to aeromodel
+        #=========================================================
+        # add dynamics model, update tracked variables
+        self.PhysicsModel = rigid_motion_model
+        self.WindModel = wind_model
+        self.PhysicsModel.WindModel = wind_model
+        self.Variables = self.Variables | self.PhysicsModel.defaultVariableConfiguration
 
     def initializeProblem(self,
-                          dynamics_model,
                           time: Union[Union[float, np.ndarray]],
-                          rigid_motion_model: Union[None, PointMass2D, Aircraft2DPointMass],
                           initial_guesses:Union[None, Dict] = None,
                           ):
         """
-        Configure the problem using a dynamics model and a rigid motion model.
+        Set up the model using stored settings from submodules. This has intentionally been separated from adding models
+        to the problem so that the user has the ability to change some confiuration of problem parameters prior to
+        initializing the problem
+
+        :param time: array defining the time space of the problem
+        :param initial_guesses: dictionary defining the initial guesses of state and control variables
         """
 
-        # set models
-        self.AeroModel = dynamics_model
-        if rigid_motion_model is not None:
-            self.PhysicsModel = rigid_motion_model
-
-        # set up initial guesses for all optimization variables
+        # set up initial guesses for all optimization variables b
         self.Time = time
-        default_limits = self.PhysicsModel.defaultVariableConfiguration
+        self.IndependentAxis = 'Time'
+        self.IndependentValues = time
+
+        # for each directly implemented opti.variable, set the parameters based on stored configuraiton
         for var_name in self.PhysicsModel._OptiVars.keys():
-            limits = default_limits[var_name]
-            if initial_guesses is None:
-                setattr(self.PhysicsModel,
-                        var_name,
-                        self.variable(
-                            init_guess=np.ones(time.shape),
-                            upper_bound=limits.UpperLimit,
-                            lower_bound=limits.LowerLimit
-                        )
-                )
+            var = self.Variables[var_name]
+
+            if var.InitialGuess is None:
+                var.InitialGuess = np.ones(time.shape)
+            setattr(self.PhysicsModel,
+                    var_name,
+                    self.variable(
+                        init_guess=np.ones(time.shape),
+                        upper_bound=var.UpperLimit,
+                        lower_bound=var.LowerLimit,
+                        freeze=var.Freeze
+                    )
+            )
 
 
     def addDynamcis(self,

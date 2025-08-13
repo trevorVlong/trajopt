@@ -47,18 +47,24 @@ def cruiseProblemTime(
     AeroModel = ThinAirfoilModel()
 
     # wind model setup (simple gust)
-    problem.WindModel.setParameters(model_name='gaussian1D',
+    wind_model = WindModel2D()
+    wind_model.setParameters(model_name='gaussian1D',
                                     **{'STD': 20,
-                                       'center': 100,
-                                       'MaxGustVelocity': -5,
+                                       'center': 50,
+                                       'MaxGustVelocity': -6,
                                        'axis': 'z'}
                                     )
 
 
     # set state vars
+
+    problem.updateModels(aero_model=AeroModel,
+                         rigid_motion_model=PhysicsModel,
+                         wind_model=wind_model,
+                         )
+    problem.Variables['ThrottlePosition'].Freeze=False
+    problem.Variables['ThrottlePosition'].setInitialGuess(0.5,len(time_array))
     problem.initializeProblem(
-        dynamics_model=AeroModel,
-        rigid_motion_model=PhysicsModel,
         time=time_array
     )
     # ======
@@ -68,21 +74,23 @@ def cruiseProblemTime(
     # =================================================================================
     # set problem constraints
 
+    # constrain dynamics
+    problem.constrainProblem()
 
     # Initial Conditions
     problem.subject_to([
         problem.PhysicsModel.Altitude[0] == 200,
         problem.PhysicsModel.EarthXPosition[0] == 0,
         problem.PhysicsModel.PitchRate[0] == 0,
-        problem.PhysicsModel.Airspeed[0] == 18,
-        problem.PhysicsModel.Alpha[0] >= 0
-
+        problem.PhysicsModel.Airspeed[0] >= 17,
     ])
 
     # Final Conditions
     problem.subject_to([
         problem.PhysicsModel.PitchRate[-1] == 0,
-        problem.PhysicsModel.Altitude[-1] == 200,
+        (problem.PhysicsModel.Altitude[-1] - problem.PhysicsModel.Altitude[0])**2 <= 100,
+        problem.PhysicsModel.AccelXBody[0] == 0,
+        problem.PhysicsModel.AccelZBody[0] == 0,
 
     ])
 
@@ -98,12 +106,10 @@ def cruiseProblemTime(
         throttle_rate**2 <= 0.2,
         elev_rate**2 <= 225,
         problem.PhysicsModel.Altitude >= 50,
-        problem.PhysicsModel.Airspeed <= 30,
     ])
 
 
-    # constrain dynamics
-    problem.constrainProblem()
+
 
 
 
@@ -113,18 +119,19 @@ def cruiseProblemTime(
     # cost function for the optimizer to work against
     problem.minimize(
         1e-3 * np.sum(curv)
-        + np.sum((dyn.Altitude[0] - dyn.Altitude[1:])**2)
+        + np.sum((dyn.Altitude[0]-dyn.Altitude[1:])**2 / 1e4),
+
     )
 
     # get solution
-    problem.solve(max_iter=1000)
+    problem.solve(max_iter=3000)
 
     return problem
 
 
 if __name__=="__main__":
 
-    time_array = np.arange(0,25,.2)
+    time_array = np.arange(0,20,.2)
     problem = cruiseProblemTime(time_array)
 
     from dynamics.visualization import visualizeRun2D

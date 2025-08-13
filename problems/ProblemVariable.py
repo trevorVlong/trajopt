@@ -33,7 +33,8 @@ class Variable:
                  end_condition: Union[float, None] = None,
                  lower_limit: Union[float, None] = None,
                  upper_limit: Union[float, None] = None,
-                 constraints: Union[cas.MX, None, List[cas.MX]] = None
+                 constraints: Union[cas.MX, None, List[cas.MX]] = None,
+                 freeze: Union[bool, None] = False,
                  ):
 
         # Identifying information
@@ -45,12 +46,29 @@ class Variable:
         self.InitialGuess = initial_guess
         self.InitialCondition = initial_condition
         self.EndCondition = end_condition
+        self.Freeze = freeze
 
         # limits and constraints
         self.LowerLimit = lower_limit
         self.UpperLimit = upper_limit
         self.Constraints = constraints
 
+    def setInitialGuess(self,
+                        value:Union[float, np.ndarray],
+                        array_length: Union[None, int] = None,
+                        ):
+        """
+        set the initial guess of the parameter as either an array or as a constant value
+        """
+
+        if array_length is None:
+            if type(value) is not np.ndarray:
+                raise ValueError('initial guess must be a numpy array')
+            self.InitialGuess = value
+        else:
+            if type(value) is not float:
+                raise ValueError('initial guess must be a float')
+            self.InitialGuess = value*np.ones((array_length,))
 
 if __name__ == "__main__":
 

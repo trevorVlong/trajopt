@@ -260,7 +260,7 @@ class Aircraft2DPointMass(PointMass2D):
             "Pitch": Variable(lower_limit=-360,upper_limit=360),
             "PitchRate": Variable(lower_limit=-50,upper_limit=50),
             "ThrottlePosition": Variable(lower_limit=0,upper_limit=1),
-            "FlapPosition": Variable(lower_limit=0,upper_limit=90),
+            "FlapPosition": Variable(lower_limit=0,upper_limit=90,freeze=True),
             "ElevatorPosition": Variable(lower_limit=-90,upper_limit=90)
         }
 
