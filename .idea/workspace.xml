@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="541d9d1c-c57d-49a2-aa01-ccbaedbdae2f" name="Changes" comment="merge">
+      <change afterPath="$PROJECT_DIR$/problems/cruise_response_gust.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamics/Aircraft2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/dynamics/Aircraft2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/cruiseExample.py" beforeDir="false" afterPath="$PROJECT_DIR$/example/cruiseExample.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problems/Problem.py" beforeDir="false" afterPath="$PROJECT_DIR$/problems/Problem.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problems/ProblemVariable.py" beforeDir="false" afterPath="$PROJECT_DIR$/problems/ProblemVariable.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -220,7 +217,7 @@
       <updated>1754405708893</updated>
       <workItem from="1754405710041" duration="2701000" />
       <workItem from="1754409481982" duration="1620000" />
-      <workItem from="1754411122487" duration="72161000" />
+      <workItem from="1754411122487" duration="77134000" />
     </task>
     <task id="LOCAL-00001" summary="merge">
       <option name="closed" value="true" />
