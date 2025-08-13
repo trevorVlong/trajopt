@@ -15,32 +15,47 @@ import aerosandbox
 
 from aerosandbox import Opti
 from aerosandbox import numpy as np
-from typing import Union
+from typing import Union, List, Dict, Callable, Any, TYPE_CHECKING
 from dynamics import Aircraft2DPointMass
-from matplotlib.pyplot import Figure,axis,axes
+from weather import WindModel2D
+from dynamics import PointMass2D
+from copy import deepcopy
+import casadi as cas
 
-
-class TrajectoryProblem2D():
+class AircraftTrajectoryProblem2D(Opti):
     """
-    A class which provides a framework for setting up trajectory optimizaiton problems using the AeroSandBox Opti
-    API. Provides methods for setting up these problems so that users do not need to interface with lower-level info
+    A class which abstracts away the setup for trajectory optimization problems involving aircraft. For
+    details on usage see method
+    docstrings and the Aerosandbox.Opti superclass documentation
     """
 
-    def __init__(self):
+    def __init__(self,
+                 variable_categories_to_freeze: Union[List[str], str] = None,
+                 cache_filename: str = None,
+                 load_frozen_variables_from_cache: bool = False,
+                 save_to_cache_on_solve: bool = False,
+                 ignore_violated_parametric_constraints: bool = False,
+                 freeze_style: str = "parameter",
+                 ):
 
-        # optimzier releated
-        self.Opti = Opti()
-        self.Solution = None
-        self.SolutionState = "not-initialized"
+        # initialize parent opti class
+        super().__init__(variable_categories_to_freeze,
+                         cache_filename,
+                         load_frozen_variables_from_cache,
+                         save_to_cache_on_solve,
+                         ignore_violated_parametric_constraints,
+                         freeze_style,
+                         )
 
         self._Constraints = dict()
         self._InitialConditions = dict()
         self._EndConditions = dict()
 
-        # properties related to the problem models
-        self.PhysicsModel = None
-        self.AeroModel = None
-        self.__WindModel__ = None
+        # initialize sub-modules, specific problem set-ups will most likely have you over-write one or the other. See
+        # submodules for implementation details
+        self.PhysicsModel = Aircraft2DPointMass()  # model for rigid motion of aircraft
+        self.AeroModel = None  #
+        self.WindModel = WindModel2D()
 
         # other problem setup info
         self.Npoints = 100
@@ -50,17 +65,41 @@ class TrajectoryProblem2D():
         # variable containers for plotting / analysis in post
         self.Time = 0
 
-    @property
-    def WindModel(self):
-        return self.__WindModel__
+        # solution storage
+        self.LastSolution = None
+        self.CurrentSolution = None
+        self.Variables = None
 
-    @WindModel.setter
-    def WindModel(self, model):
+    def initializeProblem(self,
+                          dynamics_model,
+                          time: Union[Union[float, np.ndarray]],
+                          rigid_motion_model: Union[None, PointMass2D, Aircraft2DPointMass],
+                          initial_guesses:Union[None, Dict] = None,
+                          ):
         """
-        set wind model at multiple levels
+        Configure the problem using a dynamics model and a rigid motion model.
         """
-        self.__WindModel__ = model
-        self.PhysicsModel.WindModel = model
+
+        # set models
+        self.AeroModel = dynamics_model
+        if rigid_motion_model is not None:
+            self.PhysicsModel = rigid_motion_model
+
+        # set up initial guesses for all optimization variables
+        self.Time = time
+        default_limits = self.PhysicsModel.defaultVariableConfiguration
+        for var_name in self.PhysicsModel._OptiVars.keys():
+            limits = default_limits[var_name]
+            if initial_guesses is None:
+                setattr(self.PhysicsModel,
+                        var_name,
+                        self.variable(
+                            init_guess=np.ones(time.shape),
+                            upper_bound=limits.UpperLimit,
+                            lower_bound=limits.LowerLimit
+                        )
+                )
+
 
     def addDynamcis(self,
                     dynamics_model: Aircraft2DPointMass,
@@ -123,128 +162,75 @@ class TrajectoryProblem2D():
         # do add constraint
 
         # finally, constraint derivatives using assigned method
-        self.PhysicsModel.constrain_derivatives(self.Opti,
+        self.PhysicsModel.constrain_derivatives(self,
                                                 self.Time,
                                                 method=method,
                                                 )
 
     def solve(self,
-              max_iter: int = 1000,
-              max_runtime: float = 120,
+              parameter_mapping: Dict[cas.MX, float] = None,
+              max_iter: int = 2000,
+              max_runtime: float = 1e20,
+              callback: Callable[[int], Any] = None,
               verbose: bool = True,
-              behavior_on_failure: str = 'return_last',
-              visualize: bool = True,
-              **options,
-              ) -> None:
-        """
-        Run opti.solve() and depending on outcome update output containers appropriately
-        """
+              jit: bool = False,  # see Opti documentation
+              detect_simple_bounds: bool = False,  # see Opti documentation
+              expand: bool = False,  # see Opti documentation
+              options: Dict = None,  # see Opti documentation
+              behavior_on_failure: str = "return_last",
+              ):
 
-        # try solve
-        try:
-            sol = self.Opti.solve(
-                max_iter=max_iter,
-                behavior_on_failure=behavior_on_failure,
-                verbose=verbose,
+        self.LastSolution = deepcopy(self.CurrentSolution)
+        sol = super().solve(
+                parameter_mapping,
+                max_iter,
+                max_runtime,
+                callback,
+                verbose,
+                jit,
+                detect_simple_bounds,
+                expand,
+                options,
+                behavior_on_failure
             )
 
-            # update solution state, propogate values
-            self.SolutionState = 'Converged'
-            self.Solution = sol(self.PhysicsModel)
-            self.Time = sol(self.Time)
-
-        except RuntimeError:
-            # get most recent solution and update variable arrays
-            self.SolutionState = 'Error'
-            self.Solution = sol(self.PhysicsModel)
-            self.Time = sol(self.Time)
-
-    @property
-    def Variables(self):
-        """
-        returns value or combinations of all Opti.Variable combinations
-        """
-
-        return self.PhysicsModel.variables | self.AeroModel.variables
-
-    # def plotVariableTrace(self,
-    #                       variables: Union[str, list],
-    #                       linestyles: Union[str, list] = None,
-    #                       colors: Union[str, list] = None,
-    #                       markers: Union[str, list] = None,
-    #                       linewidths: Union[str, list] = None,
-    #                       markersizes: Union[str, list] = None,
-    #                       plot_initial_conditions: Union[bool, list] = True,
-    #                       plot_constraints: Union[bool, list] = True,
-    #                       overlay: bool = False,
-    #                       plot_name: str = 'newplot'
-    #                       ):
-    #     """
-    #     plot time and / or position traces of any variable asked for
-    #     """
-    #
-    #     # make sure variables and modifiers all have same length but if
-    #     numvars = len(variables)
-    #
-    #     if len(linestyles) != numvars and linestyles is not None: raise ValueError
-    #     if len(colors) != numvars and colors is not None: raise ValueError
-    #     if len(markers) != numvars and markers is not None: raise ValueError
-    #     if len(plot_initial_conditions) != numvars and plot_initial_conditions is not None: raise ValueError
-    #     if len(plot_constraints) != numvars and plot_constraints is not None: raise ValueError
-    #     if len(linewidths) != numvars and linewidths is not None: raise ValueError
-    #     if len(markersizes) != numvars and linewidths is not None: raise ValueError
-    #
-    #     # loop through and generate plots
-    #
-    #     # generate a new plot
-    #     for idx, variable in enumerate(variables):
-    #
-    #         if not overlay:
-    #             fig, ax = plotVariable(independentvar, dependentvar,
-    #                      )
-    #         else: fig,ax = plotVariable()
-    #
-    #     self.FigDict[f'{fig.}']
-
+        # store the last solve and update initial guesses from those values. There is a Opti.solve_sweep() but it may
+        # not always be the case that you want to run this in a sweep
+        self.CurrentSolution = sol
+        self.set_initial_from_sol(self.CurrentSolution)
 
 if __name__ == "__main__":
-    from weather.WindModel2D import WindModel2D
     from aerodynamics.SimpleAircraft2D import ThinAirfoilModel
 
     # set up models / containers
-    problem = TrajectoryProblem2D()
-    problem.PhysicsModel = Aircraft2DPointMass(
+    problem = AircraftTrajectoryProblem2D()
+    PhysicsModel = Aircraft2DPointMass(
         mass=9,
         Iyy=2,
     )
-    problem.PhysicsModel.Span = 3.05
-    problem.PhysicsModel.ChordMean = 0.38
-    problem.PhysicsModel.TailSpan = 1.27
-    problem.PhysicsModel.TailChordMean = 0.25
-    problem.PhysicsModel.Area = 1.09
-    problem.PhysicsModel.TailArea = 0.2
-    problem.WindModel = WindModel2D()
-    problem.AeroModel = ThinAirfoilModel()
+    PhysicsModel.Span = 3.05
+    PhysicsModel.ChordMean = 0.38
+    PhysicsModel.TailSpan = 1.27
+    PhysicsModel.TailChordMean = 0.25
+    PhysicsModel.Area = 1.09
+    PhysicsModel.TailArea = 0.2
+    WindModel = WindModel2D()
     # add opti
     N = 100
-    problem.Time = np.linspace(0, 100, N)
-    init_guess = np.ones((N,))
-    variables = {
-        'EarthXPosition': problem.Opti.variable(init_guess=init_guess),
-        'EarthZPosition': problem.Opti.variable(init_guess=init_guess),
-        'BodyXVelocity': problem.Opti.variable(init_guess=init_guess),
-        'BodyZVelocity': problem.Opti.variable(init_guess=init_guess),
-        'Pitch': problem.Opti.variable(init_guess=init_guess),
-        'PitchRate': problem.Opti.variable(init_guess=init_guess),
-        'FlapPosition': problem.Opti.variable(init_guess=init_guess),
-        'ElevatorPosition': problem.Opti.variable(init_guess=init_guess),
-        'ThrottlePosition': problem.Opti.variable(init_guess=init_guess),
-    }
-    problem.PhysicsModel.setVariables(variables)
+    time = np.linspace(0, 100, N)
+    problem.initializeProblem(
+        dynamics_model=ThinAirfoilModel(),
+        rigid_motion_model=PhysicsModel,
+        time=time,
+    )
     problem.constrainProblem()
-    problem.Opti.subject_to(
+    problem.subject_to(
         [problem.PhysicsModel.Pitch[-1] >= 340]
     )
     problem.solve()
 
-    print('done')
+    # run again with new initial guess
+    problem.set_initial(problem.PhysicsModel.EarthXPosition,100 * np.ones(problem.Time.shape))
+    problem.solve()
+
+    print('done')  # for manual debug

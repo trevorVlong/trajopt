@@ -13,56 +13,64 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import aerosandbox
+import matplotlib.pyplot as plt
+from typing import Union, List,TYPE_CHECKING
+from aerosandbox import numpy as np
+import casadi as cas
 
 
-class OptiStateVariable:
+class Variable:
     """
-    Structured data class used to manage setup and execution of setting up asb.Opti() variables. Keeps track of
-    initial / end states, limits, constraints, and uses these to make
+    Structured data class used to make generating aerosandbox.Opti() variables a little more streamlined for
+    trajectory optimizaiton problem.
     """
 
-    def __init__(self):
-        self.Name = None
-        self.Type = None
-        self.Value = None
-        self.InitialGuess = None
-        self.LowerLimit = None
-        self.UpperLimit = None
-        self.InitialCondition = None
-        self.EndCondition = None
-        self.Constraints = None
+    def __init__(self,
+                 name: str = 'default_variable',
+                 variable_type: str = 'default',
+                 initial_guess: Union[float, np.ndarray] = 0,
+                 initial_condition: Union[float, None] = None,
+                 end_condition: Union[float, None] = None,
+                 lower_limit: Union[float, None] = None,
+                 upper_limit: Union[float, None] = None,
+                 constraints: Union[cas.MX, None, List[cas.MX]] = None
+                 ):
 
-    def setOptiVar(self,
-                   opti: aerosandbox.Opti,
-                   n_vars: int = None,
-                   scale: float = None,
-                   freeze: bool = False,
-                   log_transform: bool = False,
-                   category: str = "Uncategorized",
-                   lower_bound: float = None,
-                   upper_bound: float = None,
-                   _stacklevel: int = 1,
-                   ):
-        """
-        Create an opti.variable with defined
-        """
+        # Identifying information
+        self.Name: str = name
+        self.Type = variable_type
 
-        if self.InitialGuess is None:
-            raise ValueError(f"An initial guess is required to initialize opti variables")
+        # bondary and initial conditions
+        self.Value = initial_guess
+        self.InitialGuess = initial_guess
+        self.InitialCondition = initial_condition
+        self.EndCondition = end_condition
 
-        for key,value in self.__dict__.items():
-            if value is None:
-                if key == 'LowerLimit':
-                    self.LowerLimit = -999
-                    raise Warning('Lower limit for variable set to -999 without user input')
-                if key == 'UpperLimit':
-                    self.UpperLimit = 999
-                    raise Warning('Upper limit for variable set to 999 without user input')
+        # limits and constraints
+        self.LowerLimit = lower_limit
+        self.UpperLimit = upper_limit
+        self.Constraints = constraints
 
-        return opti.variable(
-            init_guess=self.InitialGuess,
-            upper_bound=self.UpperLimit,
-            lower_bound=self.LowerLimit,
-        )
 
+if __name__ == "__main__":
+
+    N = 10
+    t = np.linspace(0,10,N)
+    default_val = np.ones((N,))
+
+    var = Variable(
+        name='var1',
+        initial_guess=default_val
+    )
+    var2 = Variable(
+        name='var2',
+        initial_guess= 2*default_val
+    )
+
+    fig,line = var.plot(t)
+    fig,newline = var2.plot(t,
+                            fig=fig
+                            )
+
+    plt.legend()
+    plt.show()

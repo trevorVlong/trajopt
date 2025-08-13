@@ -14,9 +14,11 @@
 # SOFTWARE.
 
 import aerosandbox.numpy as np
-from typing import Union, Dict
+from typing import Union, Dict, TYPE_CHECKING
 from dynamics import PointMass2D
 from weather.WindModel2D import WindModel2D
+from problems.ProblemVariable import Variable
+import casadi as cas
 
 
 class Aircraft2DPointMass(PointMass2D):
@@ -98,6 +100,24 @@ class Aircraft2DPointMass(PointMass2D):
             "Fx_b": self.Fx_b,
             "Fz_b": self.Fz_b,
             "My_b": self.My_b,
+            "FlapPosition": self.FlapPosition,
+            "ElevatorPosition": self.ElevatorPosition,
+            "ThrottlePosition": self.ThrottlePosition
+        }
+
+    @property
+    def _OptiVars(self) -> Dict[str,Union[float, cas.MX]]:
+        """
+        returns a dict containting the name/value pairs for all assumed opti-variables
+        """
+
+        return {
+            "EarthXPosition": self.EarthXPosition,
+            "EarthZPosition": self.EarthZPosition,
+            "BodyXVelocity": self.BodyXVelocity,
+            "BodyZVelocity": self.BodyZVelocity,
+            "Pitch": self.Pitch,
+            "PitchRate": self.PitchRate,
             "FlapPosition": self.FlapPosition,
             "ElevatorPosition": self.ElevatorPosition,
             "ThrottlePosition": self.ThrottlePosition
@@ -225,6 +245,24 @@ class Aircraft2DPointMass(PointMass2D):
         """
         for var, val in variable_dict.items():
             self.__dict__[var] = val
+
+    @property
+    def defaultVariableConfiguration(self):
+        """
+        defines the default configuration of variables and returns them to the problem class for the problem setup
+
+        """
+        return {
+            "EarthXPosition": Variable(lower_limit=0),
+            "EarthZPosition": Variable(upper_limit=0),
+            "BodyXVelocity": Variable(lower_limit=0),
+            "BodyZVelocity": Variable(),
+            "Pitch": Variable(lower_limit=-360,upper_limit=360),
+            "PitchRate": Variable(lower_limit=-50,upper_limit=50),
+            "ThrottlePosition": Variable(lower_limit=0,upper_limit=1),
+            "FlapPosition": Variable(lower_limit=0,upper_limit=90),
+            "ElevatorPosition": Variable(lower_limit=-90,upper_limit=90)
+        }
 
 if __name__ == "__main__":
 
