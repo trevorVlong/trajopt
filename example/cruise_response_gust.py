@@ -18,22 +18,27 @@ from dynamics import Aircraft2DPointMass
 import numpy as np
 from cruiseExample import cruiseProblemTime
 from copy import deepcopy
+from problems import AircraftTrajectoryProblem2D as Trajprob
 
 
-def cruiseGustComparison(gust_velocity_vec,
+def cruiseGustComparison(problem: Trajprob,
+                         gust_velocity_vec,
                          time_vec):
 
 
     solutions = dict()
     # run problem for other gust conditions
+    gust_vel = problem.parameter(0)
+    problem = cruiseProblemTime(problem, time_vec, gust_vel)
     for idx,gust_velocity in enumerate(gust_velocity_vec):
-        problem = cruiseProblemTime(time_vec,gust_velocity)
 
+        # solve problem 1
+        sol = problem.solve()
+        # change something about setup, run problem 1 again from existing solution
+        problem.set_initial_from_sol(problem.CurrentSolution)
+        problem.set_value(gust_vel, gust_velocity)
         problem.solve()
-
-        solutions[f"gust{gust_velocity}_problem"] = problem.CurrentSolution(problem.PhysicsModel)
-        problem.cache_filename = f"gust{gust_velocity}_problem"
-    return problem, solutions
+    return problem
 
 
 
@@ -42,13 +47,12 @@ if __name__ == "__main__":
     from dynamics.visualization import visualizeRun2D
     import matplotlib.pyplot as plt
 
-    gust_velocities = np.arange(0,10,1.5)
-    time = np.arange(0,10,0.1)
-
-    problem, pdict = cruiseGustComparison(gust_velocities,time)
-
-    for name,res in pdict.items():
-        visualizeRun2D(problem.Time,res)
+    gust_velocities = [0,6]
+    time = np.arange(0,12,0.1)
+    problem = Trajprob()
+    problem = cruiseGustComparison(Trajprob(),gust_velocities,time)
+    figdict = visualizeRun2D(problem.Time,problem.LastSolution(problem.PhysicsModel),case='cruise',casenum=0)
+    visualizeRun2D(problem.Time,problem.CurrentSolution(problem.PhysicsModel), fig_dict=figdict,case='$w_g=6m/s$', casenum=1)
 
 
     plt.show()
