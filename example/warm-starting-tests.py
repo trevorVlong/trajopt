@@ -13,7 +13,7 @@ def howdoIwarmstart():
     """
 
     # define problem grid
-    time = np.linspace(0,20,101)
+    time = np.linspace(0,15,101)
 
     # define two separate problems and set up each
     problem = TrajProb()
@@ -26,7 +26,7 @@ def howdoIwarmstart():
     sol = problem.solve()
     # change something about setup, run problem 1 again from existing solution
     problem.set_initial_from_sol(problem.CurrentSolution)
-    problem.set_value(gust_vel,1)
+    problem.set_value(gust_vel,40)
     problem.solve()
 
     return problem
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     from matplotlib import pyplot as plt
     problem = howdoIwarmstart()
 
-    visualizeRun2D(problem.Time,problem.LastSolution(problem.PhysicsModel))
-    visualizeRun2D(problem.Time,problem.CurrentSolution(problem.PhysicsModel))
+    fig_dict = visualizeRun2D(problem.Time,problem.LastSolution(problem.PhysicsModel),fig_dict=None)
+    fig_dict = visualizeRun2D(problem.Time,problem.CurrentSolution(problem.PhysicsModel),fig_dict=fig_dict,case='2',casenum=1)
 
     plt.show()

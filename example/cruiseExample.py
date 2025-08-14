@@ -85,7 +85,7 @@ def cruiseProblemTime(
         problem.PhysicsModel.Altitude[0] == 200,
         problem.PhysicsModel.EarthXPosition[0] == 0,
         problem.PhysicsModel.PitchRate[0] == 0,
-        problem.PhysicsModel.Airspeed[0] >= 10,
+        problem.PhysicsModel.glide_slope[0] == 0,
         problem.PhysicsModel.AccelXBody[0] == 0,
         problem.PhysicsModel.AccelZBody[0] == 0,
         problem.PhysicsModel.Pitch[0]**2 <= 36
@@ -95,9 +95,10 @@ def cruiseProblemTime(
     problem.subject_to([
         problem.PhysicsModel.PitchRate[-1] == 0,
         (problem.PhysicsModel.Altitude[-1] - problem.PhysicsModel.Altitude[0])**2 <= 100,
-        problem.PhysicsModel.AccelXBody[0] == 0,
-        problem.PhysicsModel.AccelZBody[0] == 0,
-        problem.PhysicsModel.Pitch[-1] ** 2 <= 36
+        problem.PhysicsModel.AccelXBody[-1] == 0,
+        problem.PhysicsModel.AccelZBody[-1] == 0,
+        problem.PhysicsModel.Pitch[-1] ** 2 <= 36,
+        problem.PhysicsModel.glide_slope[-1] == 0
 
     ])
 

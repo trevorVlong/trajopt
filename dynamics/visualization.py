@@ -19,29 +19,39 @@ import aerosandbox.optimization.opti as opti
 import matplotlib.pyplot as plt
 import seaborn as sns
 from dynamics.Aircraft2D import Aircraft2DPointMass
-from typing import Union
+from typing import Union,Tuple
 
 sns.set_theme()
 
 
 def visualizeRun2D(time,
                    dyn:Aircraft2DPointMass,
+                   fig_dict: Union[dict[str, Tuple[plt.Figure, plt.Axes]],None] = None,
+                   case: Union[str, None] = '',
+                   casenum: int = 0,
                    ) -> dict[str, tuple[plt.figure, Union[list,plt.axis]]]:
     """
     visualization for a run of 2D dynamcis run
     :param dyn:
     :return:
     """
+    linestyles = ['-','--','-.']
 
-    fig_dict = {}
+    if fig_dict is None:
+        fig_dict = {}
     # pull out any values I know will be useful so I don't have to constantly dyn.() stuff
 
     # generate time trace subplots
-    fig, axes = plt.subplots(4,1,sharex=True,figsize=(6,10),dpi=100)
+    if 'time_series_general' not in list(fig_dict.keys()):
+        fig, axes = plt.subplots(4,1,sharex=True,figsize=(6,10),dpi=100)
+        fig_dict['time_series_general'] = (fig, axes)
+    else:
+        fig,axes = fig_dict['time_series_general']
+
 
     # velocity
-    axes[0].plot(time,dyn.Airspeed,label="$V_\\infty$")
-    axes[0].plot(time, dyn.EarthXVelocity, label="groundspeed")
+    axes[0].plot(time,dyn.Airspeed,label=f"$V_\\infty$ {case}",color='blue',linestyle=linestyles[casenum])
+    axes[0].plot(time, dyn.EarthXVelocity, label=f"groundspeed {case}",color='red',linestyle=linestyles[casenum])
     axes[0].set_ylabel("$V_\\infty$ [m/s]",rotation=0)
     axes[0].yaxis.set_label_coords(-.15,0.5)
     axes[0].set_ylim([0,1.1*np.max(dyn.Airspeed)])
@@ -49,9 +59,9 @@ def visualizeRun2D(time,
 
 
     # pitch and angle of attack
-    aline = axes[1].plot(time, dyn.Alpha, label="$\\alpha$")
-    pline = axes[1].plot(time, dyn.Pitch, label="$\\theta$")
-    axes[1].set_ylabel("Angle [deg]",rotation=0)
+    aline = axes[1].plot(time, dyn.Alpha, label= f"$\\alpha$ {case}",color='blue',linestyle=linestyles[casenum])
+    pline = axes[1].plot(time, dyn.Pitch, label=f"$\\theta$ {case}",color='red',linestyle=linestyles[casenum])
+    axes[1].set_ylabel("Angle [deg]")
     axes[1].yaxis.set_label_coords(-.2, 0.5)
 
     # if np.max(dyn.pitch) < 10:
@@ -62,23 +72,22 @@ def visualizeRun2D(time,
     axes[1].legend()
 
     # pitch rate
-    axes[2].plot(time, dyn.PitchRate, label="pitch rate")
-    axes[2].set_ylabel("Pitch Rate [deg/s]",rotation=0,)
+    axes[2].plot(time, dyn.PitchRate, label=f"pitch rate {case}",color='red',linestyle=linestyles[casenum])
+    axes[2].set_ylabel("Pitch Rate [deg/s]")
     axes[2].yaxis.set_label_coords(-.25, 0.5)
     axes[2].set_ylim([-40,40])
 
     # control motions
-    fline = axes[3].plot(time, dyn.FlapPosition, label="flap angle", color="red")
-    htline = axes[3].plot(time, dyn.ElevatorPosition, label="horizontal tail", color="blue")
-    axes[3].set_ylim([-40,40])
+    htline = axes[3].plot(time, dyn.ElevatorPosition, label=f"horizontal tail {case}",color='blue',linestyle=linestyles[casenum])
+    axes[3].set_ylim([-20,20])
     thrust_ax = axes[3].twinx()
     thrust_ax.set_ylim([-0.1,1.2])
     axes = np.append(axes,thrust_ax)
-    tline = thrust_ax.plot(time, dyn.ThrottlePosition, label="throttle position", color="green")
+    tline = thrust_ax.plot(time, dyn.ThrottlePosition, label=f"throttle position {case}",color='green',linestyle=linestyles[casenum])
 
 
-    axes[3].legend(handles=[fline[0],htline[0],tline[0]],loc="upper left",fontsize=10)
-    axes[3].set_ylabel("Angle [deg]",rotation=0)
+    axes[3].legend(handles=[htline[0],tline[0]],loc="upper left",fontsize=10)
+    axes[3].set_ylabel("Angle [deg]")
 
     thrust_ax.set_ylabel("Pos [-]")
     axes[3].set_xlabel("time [s]")
@@ -95,19 +104,28 @@ def visualizeRun2D(time,
 
     # ================================================================
     # position plot
-    fig,ax = plt.subplots(figsize=(6,3))
+    if 'position' not in list(fig_dict.keys()):
+        fig,ax = plt.subplots(figsize=(6,3))
+        fig_dict["position"] = (fig, ax)
+    else:
+        fig,ax = fig_dict["position"]
 
-    ax.plot(dyn.EarthXPosition, dyn.Altitude, label="position", marker="s", markersize=0.5)
+    ax.plot(dyn.EarthXPosition, dyn.Altitude, label=f'Position {case}', color='blue',linestyle=linestyles[casenum], marker="s", markersize=0.5)
+    ax.legend()
     ax.set_xlabel("$x^e$ [m]")
-    ax.set_ylabel("$z^e$ [m]",rotation=0)
+    ax.set_ylabel("$z^e$ [m]")
     ax.yaxis.set_label_coords(-.15,0.5)
     ax.set_ylim([0, 1.1 * np.max(dyn.Altitude)])
 
-    fig_dict["position"] = (fig,ax)
+
 
     # ================================================================
     # energy plots
-    fig, ax = plt.subplots(figsize=(6, 3))
+    if 'energy' not in list(fig_dict.keys()):
+        fig, ax = plt.subplots(figsize=(6, 3))
+        fig_dict["energy"] = (fig, ax)
+    else:
+        fig,ax = fig_dict["energy"]
 
     ax.plot(time, dyn.TE/dyn.TE[0], label="TE", marker="s", markersize=0.5)
     ax.plot(time, dyn.PE/dyn.TE[0], label="PE", markersize=0.5)
