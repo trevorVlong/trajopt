@@ -4,6 +4,7 @@
 \usepackage[a4paper, total={7in, 9in}]{geometry}
 \usepackage[]{hyperref}
 \usepackage[noabbrev]{cleveref}
+\usepackage[]{graphicx}
 
 
 \title{Disturbance Response Planning with Trajectory Optimization}
@@ -21,8 +22,7 @@ I will limit disucssion in this document to just the problem setup for the examp
 
 \section{Problem Definition}\label{sec:problem-statement}
 
-We wish to understand what the 'best' control strategy is for an aircraft maintaining  a steady altitude which is subject to a vertical gust field $w_g(x,z)$. 
-To do this, we will set up the problem as a search over the state space $\mathbf{x}(t), \mathbf{u}(t)$ over the time interval $t = [0, t_f]$ with start and end conditions which enforce the trimmed, level flight of the aircraft $\sum_{}^{}\mathbf{F}_b = 0$, $\sum\mathbf{M}_b = 0$, $\gamma = 0$. 
+We wish to estimate what the 'best' control strategy is for an aircraft to maintain  a steady altitude whenich is subo an arbitrary gust field vertical gus, we will set up the problem as a search over the state space $\mathbf{x}(t), \mathbf{u}(t)$ over the time interval $t = [0, t_f]$ with start and end conditions which enforce the trimmed, level flight of the aircraft $\sum_{}^{}\mathbf{F}_b = 0$, $\sum\mathbf{M}_b = 0$, $\gamma = 0$. 
 The problem is set up in discrete time so the interval $t = t_k$ for $ k= [1,2,...., N]$ and $t_k = k \cdot dt$ and all of the dynamics are represented as discrete values such that $\mathbf{x}(t),\mathbf{u}(t) \rightarrow \mathbf{x}[k],\mathbf{u}[k]$. \\
 \\
 As a desired outcome we will wish to minimize the deviation of the aircraft from the cruise altitude $z_c$. 
@@ -213,16 +213,18 @@ Additionally, it is possible in the present formulation to add $t_f$ and $dt$ as
 These are most likely capabilties to look at moving forward.
 
 \section{Results}
-\subsection{Undistrubed Cruise}
+\subsection{Response to Thermal Updraft}
 \begin{figure}
-	\caption{Results for steady, level flight with no disturbance}
-	\label{fig:steady-level}
+	\centering
+	\includegraphics[width=0.8\textwidth]{time-trace-3ms.png}
+	\caption{Time traces for select values for a updtraft with a core velocity of 3m/s (dashed) plotted against steady-cruise flight solution}
+	\label{fig:cruise-3m/s gust}
 \end{figure}
-
-\subsection{Response to Gust Disturbance}
 \begin{figure}
-	\caption{Results for cruise with vertical gust of strength $w_g$ centered at $x_e = 50$}
-	\label{fig:gust-parameter-sweep}
+	\centering
+	\includegraphics[width=0.8\textwidth]{time-trace-6ms.png}
+	\caption{Time traces for select values for a updtraft with a core velocity of 3m/s (dashed) plotted against steady-cruise flight solution}
+	\label{fig:cruise-6m/s gust}
 \end{figure}
 
 \section{Ongoing work}
