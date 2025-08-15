@@ -26,11 +26,10 @@ def cruiseGustComparison(problem: Trajprob,
                          time_vec):
 
 
-    solutions = dict()
     # run problem for other gust conditions
     gust_vel = problem.parameter(0)
     problem = cruiseProblemTime(problem, time_vec, gust_vel)
-    for idx,gust_velocity in enumerate(gust_velocity_vec):
+    for idx, gust_velocity in enumerate(gust_velocity_vec):
 
         # solve problem 1
         sol = problem.solve()
@@ -39,7 +38,6 @@ def cruiseGustComparison(problem: Trajprob,
         problem.set_value(gust_vel, gust_velocity)
         problem.solve()
     return problem
-
 
 
 if __name__ == "__main__":

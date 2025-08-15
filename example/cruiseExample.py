@@ -47,10 +47,12 @@ def cruiseProblemTime(
     PhysicsModel.TailChordMean = 0.25
     PhysicsModel.Area = 1.09
     PhysicsModel.TailArea = 0.2
+
     AeroModel = ThinAirfoilModel()
 
     # wind model setup (simple gust)
     wind_model = WindModel2D()
+
     wind_model.setParameters(model_name='gaussian1D',
                                     **{'STD': 20,
                                        'center': 50,
@@ -67,6 +69,7 @@ def cruiseProblemTime(
                          )
     problem.Variables['ThrottlePosition'].Freeze=False
     problem.Variables['ThrottlePosition'].setInitialGuess(0.5,len(time_array))
+
     problem.initializeProblem(
         time=time_array
     )
@@ -116,11 +119,6 @@ def cruiseProblemTime(
         problem.PhysicsModel.Altitude >= 50,
     ])
 
-
-
-
-
-
     # optimization problem
     curv = int_desc(dyn.ElevatorPosition, problem.Time) + int_desc(dyn.ThrottlePosition, problem.Time)
 
@@ -128,7 +126,6 @@ def cruiseProblemTime(
     problem.minimize(
         1e-4 * np.sum(curv)
         + np.sum((dyn.Altitude[0]-dyn.Altitude[1:])**2 / 1e2),
-
     )
 
     return problem
