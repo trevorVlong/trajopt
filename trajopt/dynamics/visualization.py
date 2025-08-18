@@ -26,7 +26,7 @@ sns.set_theme()
 
 
 def visualizeRun2D(time,
-                   dyn: Aircraft2DPointMass,
+                   dyn,
                    fig_dict: Union[dict[str, Tuple[plt.Figure, plt.Axes]],None] = None,
                    case: Union[str, None] = '',
                    casenum: int = 0,

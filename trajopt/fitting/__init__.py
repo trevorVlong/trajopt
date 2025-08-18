@@ -14,7 +14,7 @@
 # SOFTWARE.
 
 
-from Plant2Csv import *
-from readAVLMass import *
-from readAVLrun import *
-from sb2csv import *
+from trajopt.fitting.Plant2Csv import *
+from trajopt.fitting.readAVLMass import *
+from trajopt.fitting.readAVLrun import *
+from trajopt.fitting.sb2csv import *

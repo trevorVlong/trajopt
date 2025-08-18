@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="541d9d1c-c57d-49a2-aa01-ccbaedbdae2f" name="Changes" comment="merge" />
+    <list default="true" id="541d9d1c-c57d-49a2-aa01-ccbaedbdae2f" name="Changes" comment="merge">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/dynamics/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/dynamics/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/visualization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/fitting/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/problems/Problem.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/problems/Problem.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/problems/ProblemVariable.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/problems/ProblemVariable.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -269,7 +277,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/trajopt$Problem.coverage" NAME="Problem Coverage Results" MODIFIED="1754498783912" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/main" />
-    <SUITE FILE_PATH="coverage/trajopt$cruise_response_gust.coverage" NAME="cruise_response_gust Coverage Results" MODIFIED="1755532069683" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/trajopt/example" />
+    <SUITE FILE_PATH="coverage/trajopt$cruise_response_gust.coverage" NAME="cruise_response_gust Coverage Results" MODIFIED="1755535599317" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/trajopt/example" />
     <SUITE FILE_PATH="coverage/trajopt$ProblemVariable.coverage" NAME="ProblemVariable Coverage Results" MODIFIED="1754683169431" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/problems" />
     <SUITE FILE_PATH="coverage/trajopt$doc.coverage" NAME="doc Coverage Results" MODIFIED="1754411078070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
     <SUITE FILE_PATH="coverage/trajopt$Aircraft2D.coverage" NAME="Aircraft2D Coverage Results" MODIFIED="1754488147253" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dynamics" />

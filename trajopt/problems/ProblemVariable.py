@@ -14,9 +14,10 @@
 # SOFTWARE.
 
 import matplotlib.pyplot as plt
-from typing import Union, List,TYPE_CHECKING
+from typing import Union, List, TYPE_CHECKING
 from aerosandbox import numpy as np
-import casadi as cas
+if TYPE_CHECKING:
+    import casadi as cas
 
 
 class Variable:
@@ -33,7 +34,7 @@ class Variable:
                  end_condition: Union[float, None] = None,
                  lower_limit: Union[float, None] = None,
                  upper_limit: Union[float, None] = None,
-                 constraints: Union[cas.MX, None, List[cas.MX]] = None,
+                 constraints: Union['cas.MX', None, 'List[cas.MX]'] = None,
                  freeze: Union[bool, None] = False,
                  ):
 

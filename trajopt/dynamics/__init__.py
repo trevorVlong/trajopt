@@ -16,4 +16,4 @@
 from trajopt.dynamics.PointMass2D import *
 from trajopt.dynamics.Oscillator1D import *
 from trajopt.dynamics.visualization import *
-from trajopt.dynamics.PointMass2D import *
+from trajopt.dynamics.Aircraft2D import *

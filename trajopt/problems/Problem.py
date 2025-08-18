@@ -15,15 +15,16 @@
 from aerosandbox import Opti
 from aerosandbox import numpy as np
 from typing import Union, List, Dict, Callable, Any, TYPE_CHECKING
-from trajopt.dynamics import Aircraft2DPointMass
 from trajopt.weather import WindModel2D
-from trajopt.dynamics import PointMass2D
+
 from copy import deepcopy
 import casadi as cas
 from trajopt.aerodynamics import ThinAirfoilModel
-
 if TYPE_CHECKING:
-    from trajopt.problems import Variable
+    from trajopt.dynamics import Aircraft2DPointMass
+    from trajopt.dynamics import PointMass2D
+
+
 
 class AircraftTrajectoryProblem2D(Opti):
     """
@@ -56,9 +57,9 @@ class AircraftTrajectoryProblem2D(Opti):
 
         # initialize sub-modules, specific problem set-ups will most likely have you over-write one or the other. See
         # submodules for implementation details
-        self.PhysicsModel = Aircraft2DPointMass()  # model for rigid motion of aircraft
+        self.PhysicsModel: Union['Aircraft2DPointMass', None]  # model for rigid motion of aircraft
         self.AeroModel = None  #
-        self.WindModel = WindModel2D()
+        self.WindModel: Union['WindModel2D', None]
 
         # other problem setup info
         self.Npoints = 100
@@ -71,11 +72,11 @@ class AircraftTrajectoryProblem2D(Opti):
         # solution storage
         self.LastSolution = None
         self.CurrentSolution = None
-        self.Variables: dict[str, Variable] = dict()
+        self.Variables: dict[str, 'Variable'] = dict()
 
     def updateModels(self,
                   aero_model: ThinAirfoilModel,
-                  rigid_motion_model: Union[PointMass2D, Aircraft2DPointMass],
+                  rigid_motion_model: Union['PointMass2D', 'Aircraft2DPointMass'],
                 wind_model: WindModel2D,
                   ):
         """
@@ -133,7 +134,7 @@ class AircraftTrajectoryProblem2D(Opti):
 
 
     def addDynamcis(self,
-                    dynamics_model: Aircraft2DPointMass,
+                    dynamics_model: 'Aircraft2DPointMass',
                     aerodynamics_model
                     ):
         """
@@ -221,9 +222,10 @@ class AircraftTrajectoryProblem2D(Opti):
         self.CurrentSolution = sol
         self.set_initial_from_sol(self.CurrentSolution)
 
+
 if __name__ == "__main__":
     from trajopt.aerodynamics.SimpleAircraft2D import ThinAirfoilModel
-
+    from trajopt import Aircraft2DPointMass
     # set up models / containers
     problem = AircraftTrajectoryProblem2D()
     PhysicsModel = Aircraft2DPointMass(
