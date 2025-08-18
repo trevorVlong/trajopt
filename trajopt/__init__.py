@@ -13,8 +13,8 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from aerodynamics import *
-from dynamics import *
-from fitting import *
-from problems import *
-from weather import *
+from trajopt.aerodynamics import *
+from trajopt.dynamics import *
+from trajopt.fitting import *
+from trajopt.problems import *
+from trajopt.weather import *

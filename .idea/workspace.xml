@@ -5,85 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="541d9d1c-c57d-49a2-aa01-ccbaedbdae2f" name="Changes" comment="merge">
-      <change afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trajopt.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trajopt/aerodynamics/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trajopt/aerodynamics/test/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trajopt/dynamics/test/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/trajopt/example/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/AeroModelAbstract.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/AeroModelAbstract.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/Airfoil2DSection.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/Airfoil2DSection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/SimpleAircraft2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/SimpleAircraft2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/SpenceFitting.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/SpenceFitting.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/SpenceModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/SpenceModel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/ThinAirfoilAnalytical2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/ThinAirfoilAnalytical2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/aeroUtility.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/aeroUtility.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/airfoilPerformanceModels.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/airfoilPerformanceModels.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/courtinSurrogates.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/courtinSurrogates.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/dragModelling.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/dragModelling.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/propulsorModels.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/propulsorModels.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/readXfoilPolar.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/readXfoilPolar.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/sample_xfoil_datasets/naca0012_0deg_080" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/sample_xfoil_datasets/naca0012_0deg_080" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/sample_xfoil_datasets/naca0012_10deg_080" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/sample_xfoil_datasets/naca0012_10deg_080" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/sample_xfoil_datasets/naca0012_20deg_080" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/sample_xfoil_datasets/naca0012_20deg_080" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/sample_xfoil_datasets/naca0012_30deg_080" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/sample_xfoil_datasets/naca0012_30deg_080" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/sample_xfoil_datasets/naca2412_10deg_080_10" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/sample_xfoil_datasets/naca2412_10deg_080_10" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/sample_xfoil_datasets/naca2412_20deg_080_10" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/sample_xfoil_datasets/naca2412_20deg_080_10" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/sample_xfoil_datasets/naca2412_30deg_080_10" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/sample_xfoil_datasets/naca2412_30deg_080_10" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/sample_xfoil_datasets/naca2412_no_flap" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/sample_xfoil_datasets/naca2412_no_flap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/test/testAeroModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/test/testAeroModel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/test/testSimple2DAircraft.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/test/testSimple2DAircraft.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aerodynamics/xfoil_data_notebook.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/aerodynamics/xfoil_data_notebook.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/updates/update1/position-3ms.png" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/documents/updates/update1/position-3ms.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/updates/update1/position-6ms.png" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/documents/updates/update1/position-6ms.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/updates/update1/time-trace-3ms.png" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/documents/updates/update1/time-trace-3ms.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/updates/update1/time-trace-6ms.png" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/documents/updates/update1/time-trace-6ms.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/updates/update1/update.aux" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/documents/updates/update1/update.aux" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/updates/update1/update.out" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/documents/updates/update1/update.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/updates/update1/update.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/documents/updates/update1/update.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/updates/update1/update.synctex.gz" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/documents/updates/update1/update.synctex.gz" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documents/updates/update1/update.tex" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/documents/updates/update1/update.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamics/Aircraft2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/Aircraft2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamics/Aircraft2DMultiSurface.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/Aircraft2DMultiSurface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamics/Oscillator1D.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/Oscillator1D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamics/PointMass2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/PointMass2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamics/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamics/compareDynRes.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/compareDynRes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamics/test/testAircraftPointMass.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/test/testAircraftPointMass.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamics/test/testEuler2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/test/testEuler2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamics/testWindModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/testWindModel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dynamics/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/visualization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/2DforceExample.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/2DforceExample.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/cruiseExample.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/cruiseExample.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/cruise_response_gust.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/doc.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/doc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/warm-starting-tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/warm-starting-tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/Plant2Csv.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/Plant2Csv.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/example-files/b737.avl" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/example-files/b737.avl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/example-files/b737.eig" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/example-files/b737.eig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/example-files/b737.mass" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/example-files/b737.mass" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/example-files/b737.run" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/example-files/b737.run" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/example-files/b737a.dat" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/example-files/b737a.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/example-files/b737ab.dat" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/example-files/b737ab.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/example-files/b737b.dat" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/example-files/b737b.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/example-files/b737c.dat" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/example-files/b737c.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/example-files/b737d.dat" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/example-files/b737d.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/example-files/body-stability-example-ouptut-avl" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/example-files/body-stability-example-ouptut-avl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/readAVLMass.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/readAVLMass.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/readAVLrun.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/readAVLrun.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fitting/sb2csv.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/sb2csv.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problems/Problem.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/problems/Problem.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problems/ProblemVariable.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/problems/ProblemVariable.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problems/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/problems/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/openFile.py" beforeDir="false" afterPath="$PROJECT_DIR$/util/openFile.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/weather/WindMetaModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/weather/WindMetaModel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/weather/WindModel2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/weather/WindModel2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/weather/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/weather/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/weather/pointVortex.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/weather/pointVortex.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/weather/visualizeVorticityField.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/weather/visualizeVorticityField.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/dynamics/Aircraft2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/Aircraft2D.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/dynamics/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/visualization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +43,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "setup-for-distribution",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "/Users/trevorlong/Documents/MIT/PhD/trajopt",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -133,29 +59,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.cruiseExample">
-    <configuration name="Aircraft2D" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="trajopt" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/dynamics" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dynamics/Aircraft2D.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.cruise_response_gust">
     <configuration name="Problem (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="trajopt" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -244,6 +148,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="cruise_response_gust" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="trajopt" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/trajopt/example" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="trajopt" type="PythonConfigurationType" factoryName="Python">
       <module name="trajopt" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -269,7 +195,7 @@
     </configuration>
     <list>
       <item itemvalue="Python.trajopt" />
-      <item itemvalue="Python.Aircraft2D" />
+      <item itemvalue="Python.cruise_response_gust" />
       <item itemvalue="Python.Problem" />
       <item itemvalue="Python.Problem (1)" />
       <item itemvalue="Python.ProblemVariable" />
@@ -277,11 +203,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.cruise_response_gust" />
         <item itemvalue="Python.cruiseExample" />
         <item itemvalue="Python.Problem (1)" />
         <item itemvalue="Python.ProblemVariable" />
         <item itemvalue="Python.Problem" />
-        <item itemvalue="Python.Aircraft2D" />
       </list>
     </recent_temporary>
   </component>
@@ -349,7 +275,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/trajopt$Problem.coverage" NAME="Problem Coverage Results" MODIFIED="1754498783912" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/main" />
-    <SUITE FILE_PATH="coverage/trajopt$cruise_response_gust.coverage" NAME="cruise_response_gust Coverage Results" MODIFIED="1755291091587" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/example" />
+    <SUITE FILE_PATH="coverage/trajopt$cruise_response_gust.coverage" NAME="cruise_response_gust Coverage Results" MODIFIED="1755532069683" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/trajopt/example" />
     <SUITE FILE_PATH="coverage/trajopt$ProblemVariable.coverage" NAME="ProblemVariable Coverage Results" MODIFIED="1754683169431" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/problems" />
     <SUITE FILE_PATH="coverage/trajopt$doc.coverage" NAME="doc Coverage Results" MODIFIED="1754411078070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
     <SUITE FILE_PATH="coverage/trajopt$Aircraft2D.coverage" NAME="Aircraft2D Coverage Results" MODIFIED="1754488147253" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dynamics" />

@@ -41,7 +41,7 @@ if __name__ == "__main__":
     from trajopt.dynamics.visualization import visualizeRun2D
     import matplotlib.pyplot as plt
 
-    gust_velocities = [0,6]
+    gust_velocities = [0,1]
     time = np.arange(0,12,0.1)
     problem = Trajprob()
     problem = cruiseGustComparison(Trajprob(),gust_velocities,time)

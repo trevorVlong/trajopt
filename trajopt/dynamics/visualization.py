@@ -17,14 +17,16 @@
 import aerosandbox.numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from trajopt.dynamics.Aircraft2D import Aircraft2DPointMass
-from typing import Union,Tuple
+from typing import Union,Tuple,TYPE_CHECKING
+if TYPE_CHECKING:
+    from trajopt.dynamics.Aircraft2D import Aircraft2DPointMass
+
 
 sns.set_theme()
 
 
 def visualizeRun2D(time,
-                   dyn:Aircraft2DPointMass,
+                   dyn: Aircraft2DPointMass,
                    fig_dict: Union[dict[str, Tuple[plt.Figure, plt.Axes]],None] = None,
                    case: Union[str, None] = '',
                    casenum: int = 0,

@@ -12,9 +12,8 @@
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 import aerosandbox.numpy as np
-from typing import Union, Dict
+from typing import Union, Dict, TYPE_CHECKING
 from trajopt.dynamics import PointMass2D
 from trajopt.weather.WindModel2D import WindModel2D
 from trajopt.problems.ProblemVariable import Variable
