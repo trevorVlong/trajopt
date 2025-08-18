@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="541d9d1c-c57d-49a2-aa01-ccbaedbdae2f" name="Changes" comment="merge">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trajopt/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trajopt/dynamics/Aircraft2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/Aircraft2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trajopt/dynamics/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/visualization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" afterDir="false" />
-    </list>
+    <list default="true" id="541d9d1c-c57d-49a2-aa01-ccbaedbdae2f" name="Changes" comment="merge" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
