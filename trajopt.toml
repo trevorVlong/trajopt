@@ -1,0 +1,22 @@
+[project]
+name = "trajopt"
+version = "0.0.1"
+authors = [
+  { name="Trevor Long", email="longt@mit.edu" },
+]
+description = "Trajectory optimization package"
+readme = "README.md"
+requires-python = ">=3.12.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.urls]
+Homepage = "https://github.com/trevorVlong/trajopt"
+Issues = "https://github.com/trevorVlong/trajopt/issues"
+
+[tool.setuptools]
+py-modules = []
