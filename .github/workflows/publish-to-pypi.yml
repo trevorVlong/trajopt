@@ -1,0 +1,40 @@
+name: Publish Python 🐍 distribution 📦 to PyPI and TestPyPI
+on: push
+
+jobs:
+  build:
+    name: Build distribution 📦
+    runs-on: macOS-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12.x"
+
+  publish-to-testpypi:
+    name: Publish Python 🐍 distribution 📦 to TestPyPI
+    needs:
+    - build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/<package-name>
+
+    permissions:
+      id-token: pypi-AgENdGVzdC5weXBpLm9yZwIkZmRlZTk4YWQtZDU1Mi00ZDkzLTg0NmItZTcwMGVkNTUyZjEzAAIqWzMsIjdlNmMwNzJlLWYzYTMtNGUwYS04MWY0LWNmZDYxOThiOWJiMiJdAAAGIEq5bd1nH_9Kbjt7lixOF_wpYN2zKnXh4sxdYnApithU  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution 📦 to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
