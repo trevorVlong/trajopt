@@ -9,7 +9,7 @@
 name: trajopt
 
 on:
-  release: 0.0.1
+  release:
 
 permissions:
   contents: read
