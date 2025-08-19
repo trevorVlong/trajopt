@@ -13,7 +13,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from trajopt.problems import AircraftTrajectoryProblem2D as trajp
+from trajopt.main import AircraftTrajectoryProblem2D as trajp
 from trajopt.weather.WindModel2D import WindModel2D
 from trajopt.aerodynamics import ThinAirfoilModel
 from trajopt.dynamics import Aircraft2DPointMass

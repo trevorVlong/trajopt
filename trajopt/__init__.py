@@ -16,5 +16,5 @@
 from trajopt.aerodynamics import *
 from trajopt.dynamics import *
 from trajopt.fitting import *
-from trajopt.problems import *
+from trajopt.main import *
 from trajopt.weather import *

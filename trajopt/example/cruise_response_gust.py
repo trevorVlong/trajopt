@@ -16,7 +16,7 @@ import numpy as np
 from cruiseExample import cruiseProblemTime
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from trajopt.problems import AircraftTrajectoryProblem2D as Trajprob
+    from trajopt.main import AircraftTrajectoryProblem2D as Trajprob
 
 
 def cruiseGustComparison(problem: 'Trajprob',
@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     from trajopt.dynamics.visualization import visualizeRun2D
     import matplotlib.pyplot as plt
-    from trajopt.problems import AircraftTrajectoryProblem2D as Trajprob
+    from trajopt.main import AircraftTrajectoryProblem2D as Trajprob
 
     gust_velocities = [0,1]
     time = np.arange(0,12,0.1)

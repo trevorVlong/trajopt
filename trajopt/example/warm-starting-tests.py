@@ -1,6 +1,6 @@
 
 from aerosandbox import numpy as np
-from trajopt.problems import AircraftTrajectoryProblem2D as TrajProb
+from trajopt.main import AircraftTrajectoryProblem2D as TrajProb
 from cruiseExample import cruiseProblemTime
 
 def howdoIwarmstart():

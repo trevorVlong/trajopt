@@ -16,7 +16,7 @@ import aerosandbox.numpy as np
 from typing import Union, Dict, TYPE_CHECKING
 from trajopt.dynamics import PointMass2D
 from trajopt.weather.WindModel2D import WindModel2D
-from trajopt.problems.ProblemVariable import Variable
+from trajopt.main.ProblemVariable import Variable
 import casadi as cas
 
 

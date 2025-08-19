@@ -14,5 +14,5 @@
 # SOFTWARE.
 
 
-from trajopt.problems.Problem import *
-from trajopt.problems.ProblemVariable import *
+from trajopt.main.Problem import *
+from trajopt.main.ProblemVariable import *

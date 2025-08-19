@@ -6,6 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="541d9d1c-c57d-49a2-aa01-ccbaedbdae2f" name="Changes" comment="merge">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/dynamics/Aircraft2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/Aircraft2D.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/example/cruiseExample.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/cruiseExample.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/example/warm-starting-tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/warm-starting-tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/problems/Problem.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/main/Problem.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/problems/ProblemVariable.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/main/ProblemVariable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trajopt/problems/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/main/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +47,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "develop",
     "last_opened_file_path": "/Users/trevorlong/Documents/MIT/PhD/trajopt",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

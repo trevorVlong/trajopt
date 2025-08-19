@@ -29,8 +29,7 @@ if TYPE_CHECKING:
 class AircraftTrajectoryProblem2D(Opti):
     """
     A class which abstracts away the setup for trajectory optimization problems involving aircraft. For
-    details on usage see method
-    docstrings and the Aerosandbox.Opti superclass documentation
+    details on usage see method docstrings and the Aerosandbox.Opti superclass documentation
     """
 
     def __init__(self,
