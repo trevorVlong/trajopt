@@ -3,7 +3,7 @@ name: Publish to TestPyPI
 on:
   push:
     tags:
-      - "v*.*.2"   # Only run when you push a version tag like v0.1.0
+      - "v*.*.*"   # Only run when you push a version tag like v0.1.0
   workflow_dispatch: # Allow manual trigger from GitHub Actions tab
 
 jobs:
