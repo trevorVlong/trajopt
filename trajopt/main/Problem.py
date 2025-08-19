@@ -5,6 +5,7 @@
 # documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
 # rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
 # and to permit persons to whom the Software is furnished to do so.
+import warnings
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 # THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -14,17 +15,21 @@
 
 from aerosandbox import Opti
 from aerosandbox import numpy as np
-from typing import Union, List, Dict, Callable, Any, TYPE_CHECKING
+from typing import Union, List, Dict, Callable, Any, TYPE_CHECKING, Tuple
 from trajopt.weather import WindModel2D
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 from copy import deepcopy
 import casadi as cas
 from trajopt.aerodynamics import ThinAirfoilModel
+from warnings import warn
+
 if TYPE_CHECKING:
     from trajopt.dynamics import Aircraft2DPointMass
     from trajopt.dynamics import PointMass2D
+    from trajopt.main import Variable
 
-
+sns.set_theme()
 
 class AircraftTrajectoryProblem2D(Opti):
     """
@@ -72,12 +77,13 @@ class AircraftTrajectoryProblem2D(Opti):
         self.LastSolution = None
         self.CurrentSolution = None
         self.Variables: dict[str, 'Variable'] = dict()
+        self.FigureDict: dict[str,Tuple[plt.Figure, plt.Axes]] = dict()
 
     def updateModels(self,
-                  aero_model: ThinAirfoilModel,
-                  rigid_motion_model: Union['PointMass2D', 'Aircraft2DPointMass'],
-                wind_model: WindModel2D,
-                  ):
+                     aero_model: ThinAirfoilModel,
+                     rigid_motion_model: Union['PointMass2D', 'Aircraft2DPointMass'],
+                     wind_model: WindModel2D,
+                     ):
         """
         upload sub-models to the problem and perform configuration tasks based on those models
         """
@@ -89,17 +95,18 @@ class AircraftTrajectoryProblem2D(Opti):
 
         # add aero model, update tracked variables
         self.AeroModel = aero_model
-        self.Variables = self.Variables | {} #TODO add .Variables to aeromodel
-        #=========================================================
+        self.Variables = self.Variables | {}  # TODO add .Variables to aeromodel
+        # =========================================================
         # add dynamics model, update tracked variables
         self.PhysicsModel = rigid_motion_model
         self.WindModel = wind_model
         self.PhysicsModel.WindModel = wind_model
-        self.Variables = self.Variables | self.PhysicsModel.defaultVariableConfiguration
+        self.Variables: dict[str,'problem.ProblemVariable'] = (self.Variables |
+                                                           self.PhysicsModel.defaultVariableConfiguration)
 
     def initializeProblem(self,
                           time: Union[Union[float, np.ndarray]],
-                          initial_guesses:Union[None, Dict] = None,
+                          initial_guesses: Union[None, Dict] = None,
                           ):
         """
         Set up the model using stored settings from submodules. This has intentionally been separated from adding models
@@ -129,8 +136,7 @@ class AircraftTrajectoryProblem2D(Opti):
                         lower_bound=var.LowerLimit,
                         freeze=var.Freeze
                     )
-            )
-
+                    )
 
     def addDynamcis(self,
                     dynamics_model: 'Aircraft2DPointMass',
@@ -204,27 +210,99 @@ class AircraftTrajectoryProblem2D(Opti):
 
         self.LastSolution = deepcopy(self.CurrentSolution)
         sol = super().solve(
-                parameter_mapping,
-                max_iter,
-                max_runtime,
-                callback,
-                verbose,
-                jit,
-                detect_simple_bounds,
-                expand,
-                options,
-                behavior_on_failure
-            )
+            parameter_mapping,
+            max_iter,
+            max_runtime,
+            callback,
+            verbose,
+            jit,
+            detect_simple_bounds,
+            expand,
+            options,
+            behavior_on_failure
+        )
 
         # store the last solve and update initial guesses from those values. There is a Opti.solve_sweep() but it may
         # not always be the case that you want to run this in a sweep
         self.CurrentSolution = sol
         self.set_initial_from_sol(self.CurrentSolution)
 
+    def linePlot(self,
+                 y_variables: Union[str, list],
+                 x_variable: str = 'time',
+                 savepath: Union[str, None] = None,
+                 plot_name: Union[str, None] = None,
+                 solution: str = 'current',
+                 **options
+                 ):
+        """
+        plotting package for th problem that allows quick plotting of. Expected behavior is that the user can hand a
+        list of variable names they wish to plot and then the plotter will plot them all on the same axes against the
+        x-value (which is defaulted to be a time trace). For multiple plots of different values it would be the same
+        call to linePlot() with a different y-value in each case
+        """
+
+        # ===============================================================================================
+        # checks and figure creation
+        # check if there is a solution available and create a figure if there is and add to dictionary
+        if solution == 'current':
+            if self.CurrentSolution is None:
+                raise ValueError('Current solution is not populated')
+
+        if solution == 'last':
+            if self.CurrentSolution is None:
+                raise ValueError('Last solution is not populated')
+
+        if plot_name is None and len(y_variables) == 1:
+            plot_name = y_variables
+        elif len(y_variables) > 1:
+            raise ValueError('for multi-plots must give value for plot_name')
+        else: pass
+
+        fig, ax = plt.subplots(1,1)
+
+        # ==================================================================================================
+        # generate the plot # TODO move this to an external function so matplotlib can live there
+
+        # collect data from variables
+        if x_variable == 'time':
+            xdata = self.Time
+        else:
+            xdata = self.Variables[f'{x_variable}'].Value
+
+        for var_name in y_variables:
+            if var_name not in list(self.Variables.keys()):
+                warnings.warn(f'no value {var_name} in dict, skipping...')
+            else:
+                ydata = self.Variables[var_name].Value
+                ax.plot(xdata,
+                        ydata,
+                        label=var_name,
+                        )
+
+        plt.grid()
+        plt.legend()
+        # add to tracking dictionary and return, save if option is selected
+        self.FigureDict[plot_name] = (fig, ax)
+        if savepath is not None:
+            fig.savefig(savepath,
+                        transparent=None,
+                        dpi='figure',
+                        format='eps',
+                        metadata=None,
+                        bbox_inches=None,
+                        pad_inches=0.1,
+                        facecolor='auto',
+                        edgecolor='auto',
+                        backend=None
+                        )
+        return fig, ax
+
 
 if __name__ == "__main__":
     from trajopt.aerodynamics.SimpleAircraft2D import ThinAirfoilModel
     from trajopt import Aircraft2DPointMass
+
     # set up models / containers
     problem = AircraftTrajectoryProblem2D()
     PhysicsModel = Aircraft2DPointMass(
@@ -240,11 +318,14 @@ if __name__ == "__main__":
     WindModel = WindModel2D()
     # add opti
     N = 100
-    time = np.linspace(0, 100, N)
-    problem.initializeProblem(
-        dynamics_model=ThinAirfoilModel(),
+    time = np.linspace(0, 50, N)
+    problem.updateModels(
+        aero_model=ThinAirfoilModel(),
         rigid_motion_model=PhysicsModel,
-        time=time,
+        wind_model=WindModel
+    )
+    problem.initializeProblem(
+        time=time
     )
     problem.constrainProblem()
     problem.subject_to(
@@ -253,7 +334,9 @@ if __name__ == "__main__":
     problem.solve()
 
     # run again with new initial guess
-    problem.set_initial(problem.PhysicsModel.EarthXPosition,100 * np.ones(problem.Time.shape))
+    problem.set_initial(problem.PhysicsModel.EarthXPosition, 100 * np.ones(problem.Time.shape))
     problem.solve()
+
+    problem.linePlot(['Altitude'])
 
     print('done')  # for manual debug
