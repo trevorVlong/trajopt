@@ -10,6 +10,7 @@ name: trajopt
 
 on:
   release:
+    types: [created]
 
 permissions:
   contents: read
