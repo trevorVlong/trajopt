@@ -23,10 +23,10 @@ jobs:
 
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/<package-name>
+      url: https://test.pypi.org/p/trajopt
 
     permissions:
-      id-token: pypi-AgENdGVzdC5weXBpLm9yZwIkZmRlZTk4YWQtZDU1Mi00ZDkzLTg0NmItZTcwMGVkNTUyZjEzAAIqWzMsIjdlNmMwNzJlLWYzYTMtNGUwYS04MWY0LWNmZDYxOThiOWJiMiJdAAAGIEq5bd1nH_9Kbjt7lixOF_wpYN2zKnXh4sxdYnApithU  # IMPORTANT: mandatory for trusted publishing
+      id-token: write
 
     steps:
     - name: Download all the dists
