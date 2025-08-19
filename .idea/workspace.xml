@@ -6,12 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="541d9d1c-c57d-49a2-aa01-ccbaedbdae2f" name="Changes" comment="merge">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trajopt/dynamics/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trajopt/dynamics/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/dynamics/visualization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/example/cruise_response_gust.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trajopt/fitting/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/fitting/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trajopt/problems/Problem.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/problems/Problem.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trajopt/problems/ProblemVariable.py" beforeDir="false" afterPath="$PROJECT_DIR$/trajopt/problems/ProblemVariable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
