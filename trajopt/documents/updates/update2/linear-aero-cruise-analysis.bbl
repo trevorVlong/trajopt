@@ -1,0 +1,13 @@
+\begin{thebibliography}{1}
+
+\bibitem{drela_flight_2014}
+Mark Drela.
+\newblock {\em Flight vehicle aerodynamics}.
+\newblock MIT press, Cambridge Mass., 2014.
+
+\bibitem{tedrake_underactuated_nodate}
+Russ Tedrake.
+\newblock {\em Underactuated Robotics Algorithms for Walking, Running,
+  Swimming, Flying, and Manipulation}.
+
+\end{thebibliography}

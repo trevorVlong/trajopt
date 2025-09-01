@@ -1,0 +1,224 @@
+\documentclass[]{article}
+\usepackage[]{amsmath}
+\usepackage[]{hyperref}
+\usepackage[]{smartref}
+\usepackage[]{cleveref}
+\usepackage[]{marginfix}
+\usepackage[]{graphicx}
+\bibliographystyle{plain}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+
+\newcommand{\plant}{$f\left(\mathbf{x},\mathbf{u}\right)$}
+
+\title{Progress Update: Model Structure and Validation Cases}
+\author{Trevor Long}
+
+\begin{document}
+	
+	\maketitle
+	
+	\section{Overview}
+	In this document the basic sturcture of a trajectory optimizaiton-based control planning method and example use cases are presented. 
+	The document covers the basic structure of the problem, the dynamcis model that form the basis of the tool, as well as the aerodynamic and gust models which are being used for testing. 
+	The intent is to demonstrate that the solution tools that have been constructed provide ?heuristically? correct responses when posed with complex dynamic questions. \\
+	\\
+	The basic problem we will be asking is for the optimizer to find a flyable trajectory for an aircraft given some initial and final conditions, the aircraft dynaimcs, and other constraints. 
+	
+	\section{Simulation Details}
+	
+	This section details the construction of the optimal control problem and the detail of the dynamics model of the aircraft. Sections \ref{sec:traj-opt-problem}, \ref{sec:dynamics-model} relate to the general construction of the optimal control problem and dynamics model. Sections \ref{sec:aero-model}, \ref{sec:gust-model} relate to the aerodynamic and gust models as currently constructed for the validation cases. 
+	
+	\subsection{Problem Formulation} \label{sec:traj-opt-problem}
+	
+%	Points for this section
+%	\begin{itemize}
+%		\item this is a direct transcription problem formulation (tedrake)\\
+%		\item the policy search is not bound to forward time stepping and the entire trjectory is searched for at once\\
+%		\item allows for nonlinear/nonconvex plant / constraints/ cost function to be used
+%		\item this belongs more in trajectory planning that it necessarily does in control, but convex / quadratic problems do run online in some systems
+%		\item pros: searches for entire policy at once, can alter solution with several approaches (cost function vs. hard constraint), solution is guaranteed to be optimal for the posed problem vs LQR
+%		\item cons: computationally expensive, requires large problem size to resolve dynamics
+%	\end{itemize}
+	
+	The problem statement shown in \cref{eq:traj-optimization-discrete-time} sets up the trajectory planning question as a \textit{direct transcription} optimization problem over the trajectory $\mathbf{x}$ and $\mathbf{u}$ as described by Tedrake \cite{tedrake_underactuated_nodate}.
+	This sets up a problem which involves searches for a trajectory $\mathbf{x},\mathbf{u}$ that optimizes the function $\ell + J$ and which also satisfies the constraints which include the system dynamics as well as others. 
+	In the present simulation sturcture the problem is parameterized in time through the discrete index $k$ and discrete time index $k\Delta t$ which is provided from $[1,N]$, where $N$ is the length of  the simulation.
+	\\
+
+	\begin{equation} \label{eq:traj-optimization-discrete-time}
+		\begin{array}{rrclcl}
+			\displaystyle \min_{\mathbf{x}[k],\mathbf{u}[k]} & \multicolumn{3}{l}{ \ell\left( \mathbf{x}[N],\mathbf{u}[N]\right) + \sum_{k=0}^{k=N} J\left( \mathbf{x}[k],\mathbf{u}[k]\right)}\\
+			\textrm{s.t.} & \mathbf{x}[k+1] = f\left( \mathbf{x}[k], \mathbf{u}[k]\right)  \\
+			 & g(\mathbf{x}[k] \mathbf{u}[k])\leq 0  \\
+			& h(\mathbf{x}[k],\mathbf{u}[k] ) = 0\\
+			& + \; \mathrm{other \; constraints}...\\
+		\end{array}
+	\end{equation}
+	\\
+	The constraints on the problem consist of the system dynamics $f\left(\mathbf{x},\mathbf{u}\right)$, and equality and inequality constraints on $h(\mathbf{x},\mathbf{u})$, $g(\mathbf{x},\mathbf{u})$. 
+	These may be used for a variety of purposes such as setting the ground plane (altitude $\geq 0$), or rate limits on controls like the elevator. 
+	They may also be used to bound \plant such as limiting rotation rates, velocity, etc. with the proper setup.
+	\\
+	This method is mostly intended as a trajectory planning technique rather than a in-the-loop controller technique; however, according to \cite{tedrake_underactuated_nodate} if the problem is constructed to be quadratic and convex these can online as controllers for manipulation and other under-actuated problems. 
+	\\
+	
+	\subsection{Aircraft Motion Modelling} \label{sec:dynamics-model}
+	
+%	\begin{itemize}
+%		\item WHAT define the model is. 2-dimensional longitudinal dynamics represented by point mass located at the COM. State definition
+%		\item WHAT forces are summed at the COM and how these are turned into accelerations (contributions)
+%		\item HOW aero model interracts
+%		\item HOW specific terms for the aero model are calculated if needdd
+		
+%	\end{itemize}
+	For the present simulation only the longitudinal aircraft dynamics are modelled. 
+	The aircraft is assumed to be perfectly rigid and is represented as a point mass located at the mass centroid of the aircraft (which in this case is arbitrary). 
+	The point mass has freedom to move horizontally and vertically, and rotate about the pitch axis. The state and state derivatives are given in \cref{eq:state,eq:state-deriv}.
+	\\
+		\begin{align}
+		\mathbf{x} &= \begin{Bmatrix}
+			x^e, \; z^e, \; u^b, \; w^b,\; \theta,\; q\;
+		\end{Bmatrix} \label{eq:state}\\
+		\dot{\mathbf{x}} &= \begin{Bmatrix}
+			u^e, \; w^e, \; a_x^b, \; a_z^b,\; q,\; \dot{q}\;
+		\end{Bmatrix} \label{eq:state-deriv}
+	\end{align}
+	\\
+	The body and earth axes systems used for the motion model are taken from \cite{drela_flight_2014}. Conversion between the two axes system is given by \cref{eq:earth-to-body}.
+	
+		\begin{equation} \label{eq:earth-to-body}
+		T_e^b = \begin{bmatrix}
+			\cos{\theta} & \sin{\theta} \\
+			-\sin{\theta} & \cos{\theta}
+		\end{bmatrix}
+	\end{equation}
+	\\
+	Forces from all sources are summed in the body axes system; The $m$ and $I_{yy}$ values of the model are then used to get accelerations in the body axes as shown in \cref{eq:body-x-accel,eq:body-z-accel,eq:body-pitch-accel}. 
+	To compute the motion in the earth frame the velocities in the body frame are converted using \ref{eq:earth-to-body}.
+	\\
+	\begin{align} 
+		a_x & = \frac{1}{m}\sum F_{x, \mathrm{b}} =  F_{x,\mathrm{wing}} + F_{x,\mathrm{tail}} + F_{x,\mathrm{gravity}} + F_{x,\mathrm{propulsor}} + ... \label{eq:body-x-accel}\\
+		a_z & = \frac{1}{m}\sum F_{z, \mathrm{b}} =  F_{z,\mathrm{wing}} + F_{z,\mathrm{tail}} + F_{z,\mathrm{gravity}} + F_{z,\mathrm{propulsor}} + ... \label{eq:body-z-accel}\\
+		\dot{q} & = \frac{1}{I_{yy}}\sum M_{y, \mathrm{b}} =  M_{y,\mathrm{wing}} + M_{y,\mathrm{tail}}  + M_{y,\mathrm{propulsor}} + ... \label{eq:body-pitch-accel} 
+	\end{align}
+	\\
+		\begin{figure}[!h]
+		\label{fig:point-mass}
+		\caption{Point mass representation of the aircraft system showing relationahisp between axes systems}
+	\end{figure}
+	\\
+	Forces and moments generated by \plant are covered in \cref{sec:aero-model} and are model dependent. 
+	Forces are always computed in the most 'natural' axis system then converted back the the body axis for summation and computation of the accelerations
+	
+	
+	\subsection{Aerodynamics Model} \label{sec:aero-model}
+	
+	
+	The current simulation uses a simple thin-airfoil theory model of a plane consisting of a wing, stabilizer, and propulsor shown in \cref{fig:TAT-model}.  $\mathbf{u} = \begin{Bmatrix} \delta_f,\; \delta_e,\; \delta_T \end{Bmatrix}$. The influence of the flap and elevator are determined using the flap modification of thin airfoil theory and the propulsor is a simple proportional model with maximum thrust defined off a fractino of the aircraft mass. \\
+	
+	\begin{itemize}
+		\item full model definition
+		\item aeordynamics / moments summatioin
+		\item how coefficients are calculated
+		\item how drag coefficients are calculated
+		\item throttle forces
+	\end{itemize}
+	
+	\begin{figure}
+		\centering
+		\caption{The basic wing-tail-propulsor aircraft model used by the simulation} \label{fig:TAT-model}
+	\end{figure}
+	
+	Forces from the wing tail and propulsor are calculated independently and summed at the point mass using the model below. The pitching moment from the tail comes from both the pitching moment from the tail as well as the offset from the tail lengthf rom the quarter chord. The center of mass and quarter chord are assumed to be coincident. 
+	\begin{align}
+		L_\mathrm{tot} = L_\mathrm{wing} + \\
+		M_\mathrm{tot} \\ 
+		D_\mathrm{tot}
+	\end{align}
+	
+	These are rotated into the body frame via \cref{eq:aero-body-rotation} and all of the forces summed in the body frame via equation \cref{eq:body-x-accel,eq:body-z-accel,eq:body-pitch-accel}.
+	
+	\begin{equation} \label{eq:aero-body-rotation}
+		T_a^b = \begin{bmatrix}
+			\cos(\alpha) & \sin(\alpha) \\
+			-\sin(\alpha) & \cos(\alpha)
+		\end{bmatrix}
+	\end{equation}
+	\begin{itemize}
+		\item two airfoil element model with propulsor underslung
+		\item aerodynamics are thin-airfoil-theory aerodynamics
+		\item all quasi steady
+		\item drag is const + quadratic term
+	\end{itemize}
+	
+	
+	\subsection{Gust Model} \label{sec:gust-model}
+	\begin{itemize}
+		\item intent right now is only to model thermal updraft and down draft
+		\item gusts are implemented as fields of vertical velocity that changes only along x
+		\item show general shape of gust with intense core and much softer edges
+		\item gusts are dfiend by a core x location, multiple gusts can be overlayed onto the same plane
+		\item typical gust ranges
+	\end{itemize}
+	
+	Gusts are modelled as atmospheric velocity fields $G\left( x^e, z^e \right)$which alter the local x,z velocity components with the atmospheric velocity $\vec{\mathbf{V}}_G = u_\mathrm{atm}\hat{i} + w_\mathrm{atm}\hat{k}$
+	
+	\begin{align}
+		V_\infty &= \left( u^b - u^\mathrm{atm}\right) + \left(w^b - w^\mathrm{atm}\right)\\
+		\alpha &= \arctan\left( \frac{w^b - w^\mathrm{atm}}{u^b - u^\mathrm{atm}} \right)
+	\end{align}
+	
+	\section{Results}
+		
+	The models from the previous sections are implemented using \cref{tbl:aircraft-specs}
+		\subsection{Aircraft Model Specifications}
+	\begin{table}[!h]
+		\centering
+		\caption{Table of aircraft model specifications}\label{tbl:aircraft-specs}
+		\begin{tabular}{|c||c|c||c|}
+			\hline 
+			mass & 10 kg & y-inertia & 3 N/m \\
+			\hline 
+			span & 3.x m & chord  & 0.6 m \\
+			\hline 
+			AR & 5 & tail span & 1 \\
+			\hline
+			tail chord & 0.3 & tail AR & 3 \\
+			\hline
+			
+		\end{tabular}
+	\end{table}
+	\subsection{Cruise}
+	compare steady state to single vertical gust
+	
+	constraints and start / end conditions
+	\begin{equation}
+		J(x[k],u[k]) = \sum_{k=1}^N \left( z_e[k] -z_e[0] \right)^2
+	\end{equation}
+	We would expect with an updraft the the aircraft will pitch down into the updraft to keep altitude the same then ease off as it passes the core of th gust. Results show just that. Sim does allow for (extraordinarily) large deviations from altitude in the vent control insufficient for thermal
+	
+	\begin{figure}
+		\centering
+		\caption{comparison of cruise response to vertical gust} \label{fig:cruise-results}
+	\end{figure}
+	
+	
+	\subsection{Landing}
+		\begin{equation}
+			J(x[k],u[k]) = \sum_{k=1}^N \left( z_e[k] -z_e[0] \right)^2
+		\end{equation}
+	\section{Ongoing Work}
+	
+	\begin{list}{-}{}
+		\item physics rather than proportional-based propulsor model\\
+		\item blowing term reintroduction (calculate things like $C_{T'}$, $\Delta C_J$) to then use blowing CL-CX models
+		\item multi-element wing model similar to MDs flight dynamics sim paper
+		\item problem reparameterization into either track length or x-position, testing
+		\item start work on 6DOF implementation
+	\end{list}
+	
+	
+	\bibliography{bibliography}
+	
+	
+\end{document}

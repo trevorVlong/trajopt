@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99d (TeX Live 2023)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: linear-aero-cruise-analysis.aux
+The style file: plain.bst
+Database file #1: bibliography.bib
+Warning--empty publisher in tedrake_underactuated_nodate
+Warning--empty year in tedrake_underactuated_nodate
+You've used 2 entries,
+            2118 wiz_defined-function locations,
+            506 strings with 4253 characters,
+and the built_in function-call counts, 451 in all, are:
+= -- 36
+> -- 14
+< -- 0
++ -- 6
+- -- 4
+* -- 24
+:= -- 83
+add.period$ -- 5
+call.type$ -- 2
+change.case$ -- 6
+chr.to.int$ -- 0
+cite$ -- 4
+duplicate$ -- 24
+empty$ -- 45
+format.name$ -- 4
+if$ -- 91
+int.to.chr$ -- 0
+int.to.str$ -- 2
+missing$ -- 4
+newline$ -- 12
+num.names$ -- 4
+pop$ -- 18
+preamble$ -- 1
+purify$ -- 6
+quote$ -- 0
+skip$ -- 11
+stack$ -- 0
+substring$ -- 10
+swap$ -- 2
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 4
+warning$ -- 2
+while$ -- 4
+width$ -- 3
+write$ -- 20
+(There were 2 warnings)
