@@ -1,4 +1,4 @@
-# Created by trevorlong on 2/14/25
+# Created by trevorlong on 8/18/25
 # license
 # Copyright 2025 trevorlong
 
@@ -12,23 +12,3 @@
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-import pathlib as plb
-
-
-def readFile(filepath:plb.Path)->[str,list]:
-    if not (filepath.exists()):
-        raise FileNotFoundError(f"File {str(filepath)} does not exist")
-
-    with open(str(filepath), "r") as f:
-        lines = f.readlines()
-        fulltxt = f.read()
-
-    return fulltxt,lines
-
-
-if __name__=="__main__":
-    example_file_path = plb.Path("../trajopt/fitting/example-files/b737.run")
-    a,b = readFile(example_file_path)
-    print(type(a))
-    print(type(b))
