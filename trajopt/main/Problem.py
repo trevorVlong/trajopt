@@ -62,7 +62,7 @@ class AircraftTrajectoryProblem2D(Opti):
         # initialize sub-modules, specific problem set-ups will most likely have you over-write one or the other. See
         # submodules for implementation details
         self.PhysicsModel: Union['Aircraft2DPointMass', None]  # model for rigid motion of aircraft
-        self.AeroModel = None  #
+        self.AeroModel = Union['ThinAirfoilModel',None]  #
         self.WindModel: Union['WindModel2D', None]
 
         # other problem setup info
