@@ -23,6 +23,8 @@
 	The intent is to demonstrate that the solution tools that have been constructed provide ?heuristically? correct responses when posed with complex dynamic questions. \\
 	\\
 	The basic problem we will be asking is for the optimizer to find a flyable trajectory for an aircraft given some initial and final conditions, the aircraft dynaimcs, and other constraints. 
+	\\
+	The intent of this document is not \textit{thesis writing}, but is instead meant as an update to work currently happening that will later be incorporated into the thesis
 	
 	\section{Simulation Details}
 	
@@ -86,8 +88,8 @@
 	\\
 	The body and earth axes systems used for the motion model are taken from \cite{drela_flight_2014}. Conversion between the two axes system is given by \cref{eq:earth-to-body}.
 	
-		\begin{equation} \label{eq:earth-to-body}
-		T_e^b = \begin{bmatrix}
+	\begin{equation} \label{eq:earth-to-body}
+		T_b^e = \begin{bmatrix}
 			\cos{\theta} & \sin{\theta} \\
 			-\sin{\theta} & \cos{\theta}
 		\end{bmatrix}
@@ -113,9 +115,6 @@
 	
 	\subsection{Aerodynamics Model} \label{sec:aero-model}
 	
-	
-	The current simulation uses a simple thin-airfoil theory model of a plane consisting of a wing, stabilizer, and propulsor shown in \cref{fig:TAT-model}.  $\mathbf{u} = \begin{Bmatrix} \delta_f,\; \delta_e,\; \delta_T \end{Bmatrix}$. The influence of the flap and elevator are determined using the flap modification of thin airfoil theory and the propulsor is a simple proportional model with maximum thrust defined off a fractino of the aircraft mass. \\
-	
 	\begin{itemize}
 		\item full model definition
 		\item aeordynamics / moments summatioin
@@ -124,24 +123,33 @@
 		\item throttle forces
 	\end{itemize}
 	
+	The current simulation uses a simple thin-airfoil theory model of a plane consisting of a wing, stabilizer, and propulsor shown in \cref{fig:TAT-model}. 
+	The control vector representation for this system is $\mathbf{u} = \begin{Bmatrix} \delta_f,\; \delta_e,\; \delta_T \end{Bmatrix}$. 
+	Lift and drag coefficients are calculated using thin-airfoil theory and the aircraft geometry; drag is calculated using a simple constant + quadratic term. 
+	The throttle forces are calculated using a simple proportional model. 
+	  \\
 	\begin{figure}
 		\centering
 		\caption{The basic wing-tail-propulsor aircraft model used by the simulation} \label{fig:TAT-model}
 	\end{figure}
 	
-	Forces from the wing tail and propulsor are calculated independently and summed at the point mass using the model below. The pitching moment from the tail comes from both the pitching moment from the tail as well as the offset from the tail lengthf rom the quarter chord. The center of mass and quarter chord are assumed to be coincident. 
+	The force summation for wing, tail, and throttle contributions at the point mass are shown in \cref{eq:TAT-lift,eq:TAT-moment,eq:TAT-drag} in the aerodynamic coordinate system. 
+	The summation includes the terms from the offset from $\ell_T \cdot T$ and the tail volume $\ell_ \cdot L_\mathrm{tail}$. 
+	Forces are converted back into the body coordinate system using \cref{eq:aero-to-body}.
+	
+	 
 	\begin{align}
-		L_\mathrm{tot} = L_\mathrm{wing} + \\
-		M_\mathrm{tot} \\ 
-		D_\mathrm{tot}
+		L_\mathrm{tot} &= L_\mathrm{wing} + L_\mathrm{tail} \label{eq:TAT-lift} \\
+		M_\mathrm{tot} &= M_\mathrm{wing} + M_\mathrm{tail} + T \ell_t - L_\mathrm{tail} \ell_e \label{eq:TAT-moment} \\ 
+		X_\mathrm{tot} &= D_\mathrm{wing} + D_\mathrm{tail} - T \label{eq:TAT-drag}
 	\end{align}
 	
 	These are rotated into the body frame via \cref{eq:aero-body-rotation} and all of the forces summed in the body frame via equation \cref{eq:body-x-accel,eq:body-z-accel,eq:body-pitch-accel}.
 	
-	\begin{equation} \label{eq:aero-body-rotation}
-		T_a^b = \begin{bmatrix}
-			\cos(\alpha) & \sin(\alpha) \\
-			-\sin(\alpha) & \cos(\alpha)
+	\begin{equation} \label{eq:aero-to-body}
+		T_b^e = \begin{bmatrix}
+			\cos{\alpha} & \sin{\alpha} \\
+			-\sin{\alpha} & \cos{\alpha}
 		\end{bmatrix}
 	\end{equation}
 	\begin{itemize}
@@ -161,7 +169,8 @@
 		\item typical gust ranges
 	\end{itemize}
 	
-	Gusts are modelled as atmospheric velocity fields $G\left( x^e, z^e \right)$which alter the local x,z velocity components with the atmospheric velocity $\vec{\mathbf{V}}_G = u_\mathrm{atm}\hat{i} + w_\mathrm{atm}\hat{k}$
+	Gusts are modelled as atmospheric velocity fields $G\left( x^e, z^e \right)$which alter the local x,z velocity components with the atmospheric velocity $\vec{\mathbf{V}}_G = u_\mathrm{atm}\hat{i} + w_\mathrm{atm}\hat{k}$. 
+	The velocity fields in this example 
 	
 	\begin{align}
 		V_\infty &= \left( u^b - u^\mathrm{atm}\right) + \left(w^b - w^\mathrm{atm}\right)\\
