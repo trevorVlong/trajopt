@@ -1,0 +1,73 @@
+\begin{thebibliography}{10}
+
+\bibitem{electra_2023}
+Electra {Completes} {World}'s {First} {Hybrid}-{Electric} {eSTOL} {Aircraft}
+  {Flight}, November 2023.
+
+\bibitem{agrawal_wind_2019}
+Devansh Agrawal, Faisal Asad, Blake~M. Berk, Trevor Long, Jackson Lubin,
+  Christopher Courtin, Mark Drela, R~John Hansman, and Jacqueline~L. Thomas.
+\newblock Wind {Tunnel} {Testing} of a {Blown} {Flap} {Wing}.
+\newblock In {\em {AIAA} {Aviation} 2019 {Forum}}, Dallas, Texas, June 2019.
+  American Institute of Aeronautics and Astronautics.
+
+\bibitem{moore_precision_2023}
+Max Basescu, Bryanna Yeh, Luca Scheuer, Kevin Wolfe, and Joseph Moore.
+\newblock Precision {Post}-{Stall} {Landing} {Using} {NMPC} {With} {Learned}
+  {Aerodynamics}.
+\newblock {\em IEEE Robotics and Automation Letters}, 8(5):3031--3038, May
+  2023.
+
+\bibitem{courtin_flight_2020}
+Christopher Courtin, R.~John Hansman, and Mark Drela.
+\newblock Flight {Test} {Results} of a {Subscale} {Super}-{STOL} {Aircraft}.
+\newblock In {\em {AIAA} {Scitech} 2020 {Forum}}, Orlando, FL, January 2020.
+  American Institute of Aeronautics and Astronautics.
+
+\bibitem{courtin_performance_nodate}
+Christopher~B Courtin.
+\newblock Performance, {Stability} and {Control} of {Electric} {Short}
+  {Takeoff} and {Landing} {Aircraft}.
+
+\bibitem{drela_flight_2014}
+Mark Drela.
+\newblock {\em Flight vehicle aerodynamics}.
+\newblock MIT press, Cambridge (Mass.), 2014.
+
+\bibitem{etkin_dynamics_1959}
+Bernard Etkin and T.~Teichmann.
+\newblock \textit{{Dynamics} of {Flight}: {Stability} and {Control}}.
+\newblock {\em Physics Today}, 12(9):54--56, September 1959.
+
+\bibitem{long_experimental_nodate}
+Trevor Long.
+\newblock An {Experimental} {Investigation} of {Propeller} {Blown}-{Flap}
+  {Airfoils}.
+
+\bibitem{long_parametric_2021}
+Trevor Long, Mark Drela, John Hansman, and Christopher Courtin.
+\newblock Parametric {Design} {Study} for a {Blown} {Flapped} {Wing}.
+\newblock In {\em {AIAA} {AVIATION} 2021 {FORUM}}, VIRTUAL EVENT, August 2021.
+  American Institute of Aeronautics and Astronautics.
+
+\bibitem{moore_robust_nodate}
+Joseph~L Moore.
+\newblock Robust {Post}-{Stall} {Perching} with a {Fixed}-{Wing} {UAV}.
+
+\bibitem{nguyen_model_2020}
+Huan Nguyen, Mina Kamel, Kostas Alexis, and Roland Siegwart.
+\newblock Model {Predictive} {Control} for {Micro} {Aerial} {Vehicles}: {A}
+  {Survey}, November 2020.
+\newblock arXiv:2011.11104 [cs].
+
+\bibitem{spence_lift_1958}
+D.~A. Spence.
+\newblock The {Lift} on a {Thin} {Aerofoil} with a {Jet}-{Augmented} {Flap}.
+\newblock {\em Aeronautical Quarterly}, 9(3):287--299, August 1958.
+
+\bibitem{tedrake_underactuated_nodate}
+Russ Tedrake.
+\newblock {\em Underactuated Robotics Algorithms for Walking, Running,
+  Swimming, Flying, and Manipulation}.
+
+\end{thebibliography}

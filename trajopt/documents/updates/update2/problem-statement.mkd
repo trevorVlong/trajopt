@@ -1,0 +1,71 @@
+# Proposal Defense Requirements
+- A clear, specific statement of the technical problem and the objectives of the proposed
+research
+
+- A thorough, adequately referenced, summary of previous work done on the problem
+
+- A plan for the initial approach to the problem, an outline of the major foreseeable steps to a
+solution of the problem, an estimate of the time that might be required, and a list of the
+facilities needed.
+
+## Goal of This Update 
+Evaluate the construction and response of current simulation. Determine whether we believe that the current problem setup is producing results we determine to be believeable.
+
+
+
+## Problem Statement
+Stabiltization of longitudinal motion for an aircraft subject to gust disturbance during cruise. For this example explicitly not using blowing and focusing on the evaluation of trustworthiness of results. In this problem the goal is to prevent the aircraft from departing 'significantly' from its cruise altitude
+
+Questions are: 
+- *Can* the aircraft be controlled / is it controllable for a certain gust strength
+- if it is controllable, what are the control inputs that generate a 'controllable' trajectory
+- If the solution is non-unique (which it is almost guaranted to be), how do we decide between different trajecttories
+
+# Optimal control problem
+
+## problem grid
+In the section above I define the problem in terms of x[] and u[]. But did not define the parameterization of the problem. Currently in all cases the problem is parameterized in terms of time so x[], u[] become x[t], u[t]. This does not need to be the case, will explain in future work. 
+
+rewrite problem in terms of discrete time
+
+
+# Dynamics Implementation
+Starting from the constraint that xdot = f(x,u), how do relate state k to state k+1?
+
+## vehicle definition
+- show specs for vehicle and what control surfaces are available
+
+## Rigid Motion Dynamics as Implemented
+
+- Aircraft Motion is simulated as a point mass in 2-dimensions. For longitudinal problem, show the state x, control u
+- Coordinate systems used are body and earth with x-forward, z-down, see figure / create figure
+- position always held in the arth frame, other directly simulated variables are in body frame
+- integration of forces to velocity, position
+
+## Aerodynamics as Implemented
+- calcualted in aero/ stability frame then rotated into body frame
+- show figure of current aircraft model
+- print out equations in their entireity for L,D,M, and rotation matrix to body frame
+- linear aero model math for L,D,M from single airfoil
+- full sysytem LDM from point 3
+
+## wind / atmospheric model
+- construction of wind / atmospheric model
+- diagram of a thermal
+
+## Ancillary Terms / Implementation specifics
+How other ancillary terms calculated
+- alpha
+- gamma
+- energy?
+- altitude vs Z
+
+# Example / Code Implementation
+
+Problem setup using the TrajOpt Code
+Opti class
+MotionModel class
+Aerodynamics Model class
+WindModel class
+
+use python notebooke to go through creating a parameter sweep

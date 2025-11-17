@@ -1,0 +1,43 @@
+\subsection{Aircraft Control Systems} \label{sec:control}
+\begin{itemize}
+	\item Modern fly-by-wire systems, make control mixing easier can switch between 'modes' more easily
+	\item All sorts of aids: autopilot, stability enhancement, envelope control. Ultimate goal is to have one or multiple of these systems
+	\item The plan is to understand how to fly with the trajectory optimization, then implement as either a controller or flight aid, whichever seems more relevant
+	\item generate procedure -> generate controller
+\end{itemize}
+
+Since at least the 60s we have also had autoland systems
+
+\subsubsection{Trajectory Planning} \label{ssec:trajectory-planning}
+First thing we can do is use modern tools to generate trajectories for these aircraft using surrogate models. By doing this we can use the optimizer to help us understand the difference between 'good' control and 'bad' control. This is especially relevant because of how high the control space is which makes it much more difficult to decide what conrols what. \\
+\\
+Why is this relevant now and not before?\\
+\\
+Why do we have confidence we can come to some actual solution\\
+\\
+To do this, what is the plan?\\
+\\
+How complete does the model need to be?\\
+\\
+\begin{itemize}
+	\item technique of trajectory optimization is nothign novel, GPOPS, others have been doing it for a while
+	\item lots of advancement for using on-line in robotics, particularly for manipulation
+	\item example: used for perching paper as exmaple of solving complex aerodynamic model
+	\item h
+\end{itemize}
+
+what is novel here is proposing to develop control trajectories, not just aircraft tajectories. 
+
+\subsubsection{Implementation} \label{ssec:controller}
+Once you generate flight paths you have the option of how you use that information. \\
+\\
+Do you create a controller and try and eliminate pilot ?\\
+\\
+Do you create pilot aids like alarms and vocal warnings? maybe something more modern \\
+\\
+Do you try and use the fly-by-wire system to create a dew control schema that the pilot switches to?\\
+\\
+How does this impact operations more broadly?\\
+\\
+
+

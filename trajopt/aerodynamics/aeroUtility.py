@@ -157,9 +157,9 @@ def jetMomentumCoefficient(Vj:Union[float,np.ndarray],
     return J/M0
 
 
-def thrustCoefficient(T,Sref,air_density,Vinf):
+def Tcp(T, Sref, air_density, Vinf):
     """
-    Tc', quasi 3D non-dimensionalization of thrust per span
+    Tc', quasi 3D non-dimensionalization of thrust based on wing area
     :param T: thrust
     :param Sref: area of propulsor
     :param air_density:

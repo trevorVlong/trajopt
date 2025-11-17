@@ -1,0 +1,65 @@
+# TrajOpt Update #1
+
+The purpose of this update is to outline the modeling 
+
+##  Purpose and Motivation
+Trajopt is a tool to help users design control *strategies* for aircraft with complex dynamics. Using the aerosanbox interface with CASADi, Trajopt abstrats away most of the problem setup to create *trajectory optimization* problems using aircraft dynamics as the constraint. what is a trajectory optimizaiton problem?
+
+
+
+The motivaiton for Trajopt is the development of control strategies for limiting the landing dispersion of blown-lift aircraft subject to gusts on approach. The reason for this is that 1) blown lift aircraft using electric drivetrains are *overactuated* systems that have multiple control inputs in $u$ which affect the same dynamic axis, 2) the aerodynamics of blowing is extremely nonlinear 3) blowing aircraft have non-unique conbinations of $x,u$ which can develop the same $\dot{x}$. S
+
+
+## why use trajectory optimizaiton over other control generation strategies? 
+
+## What it is and what it is not
+It is worth restating from above that trajopt is specifically not designed to build controllers, but designs entire trajectories in x,u which optimize some policy over an entire problemm. So, while a controller will decide at time t some optimal policy u(t) some immediate cost, this problem formulation looks over an entire interval. It may more accurately be lumped in planning, or model predictive control, directly a controller. 
+
+As will be dicussed later, this does not specifically prevent Trajopt's use for looking at optimizing a control policy over a trajectory which may then later be implemented. But it does mean that it's use is specifically not as a controller-in-the-loop
+
+
+
+
+# Format of Actual Update
+Intended to show a knowledgeable user how to construct a trajectory optimizaiton problem using trajopt. The intent is by the end of the explanation the user could build their own trajectory problem based on the example (in this case landing with a single gust)
+
+## Code overview with graph / figure
+- show relationship between different functions in the program
+- should show how dataflow works
+- key functions
+
+### Opti class
+- derivative of asb.Opti
+- used to generate problem-wide interfaces and handles interface with CASADi
+
+### Physics Model
+- specifies the x,u variables and the relationship with rigid motion. So forces from the aerodynamics model (described later) create forces in the body frame which become accelerations, then velocities, then positions based on relationships determined here
+- also handles specific rotations and transformations of the model
+- how specific controls are modeled (like aielron, flap, throttle)
+
+### Aerodynamics Model
+- Forcing modelf(x,u) that creates forces that move the point mass
+- ingests the point mass model and creates the relationships that determine $\dot{x}$
+- needs to use all variables
+
+
+### Wind Model 
+- generates the wind velocity $V_w(x,z)$ based on user construction
+- has ability to overlay gusts at different directions and different types of gusts
+- currently only implemented as a gaussian, but is not restricted to that
+
+## Use of Trajopt
+
+### Creating Models
+- there are some in built
+- show users how to create own
+
+### Proof of Concept -- Cruise
+- 
+### Landing Problem for aircraft subject to gust
+
+## Active work
+- adding blowing model back in ( and description of how that will be done)
+- Different wind fields
+- more complex aerodynamics model (and math)
+- generalize aerodynamics model

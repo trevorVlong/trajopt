@@ -1,0 +1,128 @@
+\documentclass[]{article}
+\usepackage[]{amsmath}
+\usepackage[]{hyperref}
+\usepackage[]{smartref}
+\usepackage[]{cleveref}
+\usepackage[]{marginfix}
+\usepackage[]{graphicx}
+\bibliographystyle{plain}
+\usepackage[a4paper, total={6.5in, 8in}]{geometry}
+\usepackage[]{setspace}
+
+\singlespacing
+
+% 
+\graphicspath{{/Users/trevorlong/Documents/MIT/PhD/figures/}}
+
+% custom commands
+\newcommand{\plant}{$f\left(\mathbf{x},\mathbf{u}\right)$}
+
+
+\title{Longitudinal Landing Control for Blown Lift Aircraft}
+\author{Trevor Long}
+
+\begin{document}
+	
+	\maketitle
+	
+	\section{Introduction} \label{sec:introduction}
+	
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.6\textwidth]{generic-pic.jpeg}
+		\caption{(TO DO, PLACEHOLDER PICTURE)Comparison of a common traditional aircraft design (left) and a distributed electric propulsion, blown-lift aircraft (right)} \label{fig:STOL-designs}
+	
+	\end{figure}
+		For the past decade, significant effort has been expended in the aviation industry to design new aircraft that would take advantage of advances in battery storage and electric propulsion technologies to provide new capabilities to open opportunities to serve both dense urban locations in cities as well as less-developed rural areas. 
+		At present, these efforts have resulted in significant interest in a new generation of fixed-wing, Short Takeoff and Landing (STOL) aircraft which are able leverage Distributed Electric Propulsion (DEP) systems to take advantage of beneficial aero-propulsive coupling, 'powered-lift', designs \cite{courtin_performance_nodate};
+		STOL aircraft provided distinct advantages over Vertical Takeoff and Landing (VTOL) aircraft because while they are able to operate with similar ground infrastructure requirements, they retain most of the cruise efficiency of advantage that conventional fixed-wing aircraft have over VTOL aircraft like helicopters.
+		At present several companies such as Electra.aero \cite{electra-first-flight} and Regent \cite{regent-sea-trials} are running flight-tests of full-scale prototypes, and both are actively working on the design and certification of commercial-scale aircraft. \\
+		\\
+		% Current Status / State of the art
+		Electrified STOL aircraft, referred to now comonly as ultra-STOL or uSTOL aircraft, offer significant capability improvements over previous STOL designs due to the use of DEP. 
+		\begin{itemize}
+			\item The electra EL-2 prototype is able to take-off and land in ~150ft \cite{electra_2023}, more than previous examples \cite{courtin_performance_nodate}
+			\item More effectively distribute blowing across the wing, providing more effective blowing \cite{long_experimental_nodate,agrawal_wind_2019,spence_lift_1958}
+			\item utilize fly-by-wire flight control systems to augment pilot capabilities \cite{courtin_performance_nodate}
+		\end{itemize}
+		However, the short-field performance of uSTOL is still largely connected to the management of the stability and control issues associated with low-speed flight \cite{courtin_performance_nodate}.  
+		\begin{itemize}
+			\item STOL aircraft suffer from poor longitudinal stability and sluggish roll and yaw response to control inputs, these can all be connected to both blowing and slow flight speed and so are endemic to the platform
+			\item
+		\end{itemize}
+		There is also a question of 'how' to fly them because dimension of control is much higher than the number of control axes and the intense coupling between blowing and control authority along the wing.
+		\begin{itemize}
+			\item Courtin 'fixed' this by tying together inner and outer propellers into units of propellers which were controlled together \cite{courtin_performance_nodate}
+			\item with propeller-based blowing there are potential stall regions behind the prop \cite{long_experimental_nodate,courtin_flight_2020}
+			\item Power to different motors can be used to control roll/yaw but due to coupling must be done carefully \cite{courtin_performance_nodate} (e.g. might run out of thrust for a certain operation OR too little thrust might cause stall)
+		\end{itemize}
+		Urban environments are anything but nice to operate in
+		\begin{itemize}
+			\item urban heat islands contribute to increased thermal activity
+			\item large buildings break up steady winds and shed vortices which will make landing difficult
+			\item together with the results from courtin it is clear that the robust realization of short landings will require further investigation.
+		\end{itemize}
+		The reliable operation of uSTOL aircraft is dependent on the development of suitable landing trajectories and control methods which decrease the maximum landing dispersion. 
+		\begin{itemize}
+			\item requires we know how different disturbances effect the aircraft
+			\item requires some knowledg of the 'best' way to respond to 1) design controllers and 2) grade their performance
+			\item will most likely require the development of pilot aids either through autoland systems or control configurations which offload pilot
+		\end{itemize}
+		Advances in control techniques from the robotics field provide interesting avenues of investigation \cite{tedrake_underactuated_nodate} \cite{nguyen_model_2020}.
+		\begin{itemize}
+			\item Moore was able to perch a glider using simple model and limited control using trajectory optimization to design trajectory and LQR control to manage deviations from that trajectory \cite{moore_robust_nodate}
+			\item More recent investigations have used model predictive control \cite{moore_precision_2023}
+			\item can leverage these techniques to help control this problem which is much more complex than the standard aircraft control problem
+		\end{itemize}
+		
+		\subsection{Thesis Outline and Objectives}
+		%Thesis goal
+		The objective of this thesis is to develop methods to limit the landing dispersion of uSTOL aircraft. Specifically, this thesis will focus on control of the longitudinal problem adapted from \cite{courtin_performance_nodate} with the addition of disturbances during landing approach shown in \cref{fig:landing-problem}. 
+		The investigation approach intends to follow methods used by \cite{moore_precision_2023,moore_robust_nodate} to develop state and control trajectories with robust disturbance rejection characteristics. 
+		It will then explore possible control techniques, and sensor suites required for this control. 
+		The powered-lift plant for all of the above will come from a combination of low-fidelity, mid-fidelity, and wind-tunnel based aerodynamics databases. 
+		Specific thesis objectives are outlined below: 
+			  
+		\begin{figure}[!t]
+			\centering
+			\includegraphics[width=0.6\textheight]{landing-problem.pdf}
+			\caption{The premise of the landing problem} \label{fig:landing-problem}
+		\end{figure}
+		\begin{itemize}
+			\item Investigate the effects of gust disturbances on the stability of blown-lift SSTOL aircraft and identify effects which lead to trajectory instability
+			\item Development of a simulation environment whcih can be used to investigate SSTOL control problems through a trajectory optimizaiton framework
+			\item Development of detailed aerodynamics databases at mutliple fidelities for investigation
+			\item Development of landing trajectories that have robust properties and control authority for gust rejection. 
+			\item investigation of methods which can be used to aid pilots in flying these trajectories 
+		\end{itemize}
+
+	In the remainder of this document more context on issues and methods referred to in this section.
+	\newpage 
+	
+	\section{Background} \label{sec:problem-statement}
+	% briefly introduce STOL
+	
+	Despite the current generation of blowing-augmented STOL aircraft being designed to take advantage modern electric propulsion and battery technologies, many attempts at successful designs using this concept have been proposed since the jet-flap concept was proposed by Spence \cite{spence_lift_1958}. 
+	The jet flap allows for significant increases in ahievable lift coefficients, far beyond what is known to be achievable using multi-element flaps alone \cite{smith-high-lift,long_experimental_nodate,long_parametric_2021}
+	Previously these designs were explored extenstively in the 1970s and 1980s, several groups were experimenting with different variations of the concept; however, none of these designs ultimately progressed past the test phase even with successful test campaigns; the common issue cited for the ending of these programs was the mechanical complexity required to control and design these aircraft. Courtin provides a detailed overview of the history of these aircraft is provided by Chapter 2 in \cite{courtin_performance_nodate}.
+	\\
+	The obvious advantage of generating high lift coefficients is the ability to reduce the footprint of landing and takeoff. While a modern aircraft using flaps and slats might generate a $c_\ell \approx 2$, a well-designed blowing-augmented aircraft might be able to easily reach a $c_\ell \approx 5$ \cite{smith-high-lift,long_experimental_nodate}; All else being equal, the STOL aircraft using blowing would then fly $\approx 1.6x$ slower than the conventional aircraft. Taken to the extreme it seems likely that for a Cesna-sized aircraft it is possible for a fixed-wing aircraft to take-off and land along a $150$ft runway which would allow operations in both highly urban and remote environments \cite{courtin_performance_nodate}.\\
+	\\
+	But as it turns out, flyig slowly and landing repeatably is more of a challange than it first may appear. 
+	Additionally, the aerodynamics and rigid dynamics of these aircraft are much more complicated than those for conventional aircraft designs. 
+	Additionally, the use of distributed electric propulsion and fly-by-wire systems gives designers now hav emore nuanced control on the wing. 
+	In the remaineder of this section, I will briefly summarize many of the issues present in 
+	
+	% what makes sstol aircraft different from a 'normal' aircraft
+	\input{sstol-dynamics.tex}
+	% why is this an issue?
+	\input{winds.tex}
+	% How do you figure out how to control them 
+	\input{trajectory-planning.tex}
+	% Once you know how do you control / aid landing
+	\input{landing-control.tex}
+	
+	\bibliography{bibliography}
+	
+	
+\end{document}

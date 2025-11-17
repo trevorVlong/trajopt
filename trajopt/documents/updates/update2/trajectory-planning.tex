@@ -1,0 +1,25 @@
+\subsection{Trajectory Planning} \label{sec:trajectory-planning}
+How are trajectories planned now (hint, they've been developed over time by the FAA). methods are inadequate for much higher performance aircraft. 
+
+one way to look at this is as a trajectory optimization problem, now talk some about that
+
+
+\begin{equation} \label{eq:traj-optimization-discrete-time}
+	\begin{array}{rrclcl}
+		\displaystyle \min_{\mathbf{x}[k],\mathbf{u}[k]} & \multicolumn{3}{l}{ \ell\left( \mathbf{x}[N],\mathbf{u}[N]\right) + \sum_{k=0}^{k=N} J\left( \mathbf{x}[k],\mathbf{u}[k]\right)}\\
+		\textrm{s.t.} & \mathbf{x}[k+1] = f\left( \mathbf{x}[k], \mathbf{u}[k]\right)  \\
+		& g(\mathbf{x}[k] \mathbf{u}[k])\leq 0  \\
+		& h(\mathbf{x}[k],\mathbf{u}[k] ) = 0\\
+		& + \; \mathrm{other \; constraints}...\\
+	\end{array}
+\end{equation}
+
+What is optimal control / trajectory optimization? What was it developed for and why hasn't it been used for aircraft? 
+- historically you could easily separate controls to individual components
+- they've used it, but not to design control trajectories (GPOPS, courtin, soaring)
+- how is the problem defined (tedrake, other AIAA paper that described collocation)
+\\
+How exactly do you set this up as a trajectory problem? What is the problem, what are the constraints?\\
+\\
+ARe there any examples of similar funcitoning systems? (perching) \\
+\\

@@ -1,0 +1,22 @@
+# Motion Model)
+
+Aircraft longitudinal motion is modelled as a rigid 2D point mass with the coordinate systems shown in figure {ref figure}. The point mass has the freedom to move in the x and z axes and rotate in the y-axis out of plane. The earth and body coordinate systems shown are the standard x-forward, z-down orientations that are commonly used in aero. 
+
+figure 
+
+The actual state vector and state derivative that are tracked uses a combination of earth and body axis values shown below. The transformation tensors between body and earth using aircraft pitch are shown in eq {ref equation}.
+
+$\dot{\mathbf{x}}= \{x,z,u,w,\theta,q \}$
+
+$\dot{x} = f(x,u)$\
+$x(t+\Delta t) = x(t) + \Delta t f(x,u)$ where f may be linearized for fully nonlinear dynamics. 
+forces
+$\ddot{x}_b = \frac{1}{m}\sum{F_{x,b}}$\
+$\ddot{z}_b = \frac{1}{m}\sum{F_{z,b}}$\
+$\dot{q}_b = \frac{1}{I_{yy}}\sum{M_{y,b}}$\
+
+xdot is then integrated and the displacement in the body frame is transformed into the earth frame. 
+
+# Aerodynamics Model
+
+The aerodynamic forcing described by $f(x,u)$ in the previous section represents the simulated dynamics of the aircraft
