@@ -21,14 +21,15 @@ from aerosandbox import numpy as np
 from aerosandbox.numpy.integrate_discrete import integrate_discrete_squared_curvature as int_desc
 from typing import Union,TYPE_CHECKING
 
+
 if TYPE_CHECKING:
-    pass
+    import casadi as cas
 
 
 def cruiseProblemTime(
         problem,
         time_array: Union[float,np.ndarray],
-        gust_model_velocity: float = 0,
+        parameters:dict[str,"cas.MX"]
 ) -> trajp:
     """
     example setup of a cruise problem with a vertical gust
@@ -54,9 +55,9 @@ def cruiseProblemTime(
     wind_model = WindModel2D()
 
     wind_model.setParameters(model_name='gaussian1D',
-                                    **{'STD': 20,
-                                       'center': 50,
-                                       'MaxGustVelocity': -gust_model_velocity,
+                                    **{'STD': 10,
+                                       'center': 75,
+                                       'MaxGustVelocity': -parameters['gust_vel'],
                                        'axis': 'z'}
                                     )
 
@@ -76,7 +77,8 @@ def cruiseProblemTime(
     # ======
     # general constraints for each variable which I'll include in a setup file later
     dyn = problem.PhysicsModel
-
+    # settings
+    problem.PhysicsModel.FlapPosition = parameters['FlapAngle']
     # =================================================================================
     # set problem constraints
     problem.constrainProblem()
@@ -85,23 +87,24 @@ def cruiseProblemTime(
 
     # Initial Conditions
     problem.subject_to([
-        problem.PhysicsModel.Altitude[0] == 200,
-        problem.PhysicsModel.EarthXPosition[0] == 0,
-        problem.PhysicsModel.PitchRate[0] == 0,
-        problem.PhysicsModel.glide_slope[0] == 0,
-        problem.PhysicsModel.AccelXBody[0] == 0,
-        problem.PhysicsModel.AccelZBody[0] == 0,
-        problem.PhysicsModel.Pitch[0]**2 <= 36
+        problem.PhysicsModel.Altitude[0] == parameters['InitialAltitude'],
+        problem.PhysicsModel.EarthXPosition[0] == parameters['InitialXPosition'],
+        problem.PhysicsModel.BodyXVelocity[0]== parameters['InitialXVelocity'],
+        problem.PhysicsModel.BodyZVelocity[0]**2 <= 1,
+        # problem.PhysicsModel.Fz_b[0]**2<=0.1,
+        problem.PhysicsModel.PitchRate[0]**2 <= .10,
+        problem.PhysicsModel.Pitch[0] == parameters['InitialPitch'],
+        problem.PhysicsModel.ThrottlePosition[0] == parameters['InitialThrottle']
     ])
 
     # Final Conditions
     problem.subject_to([
-        problem.PhysicsModel.PitchRate[-1] == 0,
-        (problem.PhysicsModel.Altitude[-1] - problem.PhysicsModel.Altitude[0])**2 <= 100,
-        problem.PhysicsModel.AccelXBody[-1] == 0,
-        problem.PhysicsModel.AccelZBody[-1] == 0,
+        problem.PhysicsModel.PitchRate[-1]**2 <= 0.1,
+        problem.PhysicsModel.AccelXBody[-1]**2 <= 0.1,
+        problem.PhysicsModel.AccelZBody[-1]**2 <=0.1,
         problem.PhysicsModel.Pitch[-1] ** 2 <= 36,
-        problem.PhysicsModel.glide_slope[-1] == 0
+        problem.PhysicsModel.glide_slope[-1]**2 <=0.1,
+
 
     ])
 
@@ -114,7 +117,7 @@ def cruiseProblemTime(
     elev_rate = dElevator/dTime
 
     problem.subject_to([
-        throttle_rate**2 <= 0.2,
+        throttle_rate**2 <= 0.8,
         elev_rate**2 <= 225,
         problem.PhysicsModel.Altitude >= 50,
     ])
@@ -125,7 +128,8 @@ def cruiseProblemTime(
     # cost function for the optimizer to work against
     problem.minimize(
         1e-4 * np.sum(curv)
-        + np.sum((dyn.Altitude[0]-dyn.Altitude[1:])**2 / 1e2),
+        + np.sum((dyn.Altitude[0]-dyn.Altitude[1:])**2 / 1e2)
+        + np.sum((dyn.Airspeed[0]-dyn.Airspeed[1:])**2)/1e4
     )
 
     return problem

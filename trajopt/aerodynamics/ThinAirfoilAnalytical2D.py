@@ -79,7 +79,7 @@ def liftCoeffFlappedThinAirfoil(E:float):
 
         A0, A1, A2 = An(E)(alpha, delta_f)
 
-        return 2*np.pi * (A0 + 1/2*A1)
+        return (2*np.pi * (A0 + 1/2*A1))
 
     return cl
 

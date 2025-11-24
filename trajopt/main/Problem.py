@@ -76,6 +76,7 @@ class AircraftTrajectoryProblem2D(Opti):
         # solution storage
         self.LastSolution = None
         self.CurrentSolution = None
+        self.ReferenceSolution = None
         self.Variables: dict[str, 'Variable'] = dict()
         self.FigureDict: dict[str,Tuple[plt.Figure, plt.Axes]] = dict()
 
@@ -206,9 +207,9 @@ class AircraftTrajectoryProblem2D(Opti):
               expand: bool = False,  # see Opti documentation
               options: Dict = None,  # see Opti documentation
               behavior_on_failure: str = "return_last",
+              save_solution = True
               ):
 
-        self.LastSolution = deepcopy(self.CurrentSolution)
         sol = super().solve(
             parameter_mapping,
             max_iter,
@@ -222,10 +223,11 @@ class AircraftTrajectoryProblem2D(Opti):
             behavior_on_failure
         )
 
-        # store the last solve and update initial guesses from those values. There is a Opti.solve_sweep() but it may
-        # not always be the case that you want to run this in a sweep
+        if save_solution:
+            self.ReferenceSolution = sol
         self.CurrentSolution = sol
-        self.set_initial_from_sol(self.CurrentSolution)
+
+        return sol
 
     def linePlot(self,
                  y_variables: Union[str, list],

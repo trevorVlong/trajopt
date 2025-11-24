@@ -33,7 +33,7 @@ class ThinAirfoilModel(AeroModel):
         self.TailMomentCoeffFunction: callable = pitchCoeffFlappedThinAirfoil(E=0.3)
 
         # engine
-        self.PropulsorModel: callable = scaledPropulsorPoint(thrust_to_weight_ratio=0.4)
+        self.PropulsorModel: callable = scaledPropulsorPoint(thrust_to_weight_ratio=0.55)
 
         # store relationships for L,D,M ; cl,cd,cm
         self.Lift = None
@@ -43,6 +43,9 @@ class ThinAirfoilModel(AeroModel):
         self.DragCoeff = None
         self.MomentCoeff = None
 
+        # offsets etc
+        self.TailOffsetAngle = 3 # deg
+        self.WingCmOffset = -1
     def tailDynamicsModel(self,
                           dynModel:"Aircraft2DPointMass",
                           w_induced: Union[float,np.ndarray] = 0,
@@ -60,9 +63,9 @@ class ThinAirfoilModel(AeroModel):
         e = 0.95 # span efficiency of tail
 
         #unpack state variables and control variables that are needed
-        alfa = dynModel.Alpha   # state - some offset angle in deg
+        alfa = dynModel.Alpha + self.TailOffsetAngle   # state - some offset angle in deg
         delta_e = dynModel.ElevatorPosition  # elevator defleciton in deg (+ down)
-        cd0 = 0.05  # zero-lift drag (set low for now)
+        cd0 = 0.1  # zero-lift drag (set low for now)
 
         # ===============================================================
         # call stored dynamics functions which can be any callable, polynomials are preferred for speed
@@ -88,7 +91,7 @@ class ThinAirfoilModel(AeroModel):
         #unpack state variables and control variables that are needed
         alfa = dynModel.Alpha
         delta_f = dynModel.FlapPosition
-        cd0 = 0.15 # zero-lift drag
+        cd0 = 0.05 # zero-lift drag
 
 
         # cl
@@ -96,7 +99,7 @@ class ThinAirfoilModel(AeroModel):
         # cd
         cd = self.WingDragCoeffFunction(cl,AR,e,cd0)
         # cm
-        cm = self.WingMomentCoeffFunction(alfa,delta_f)
+        cm = self.WingMomentCoeffFunction(alfa,delta_f) + self.WingCmOffset
 
         return cl,cd,cm
 
@@ -130,9 +133,11 @@ class ThinAirfoilModel(AeroModel):
 
         # sum contributions, relate through area ratio
         Arat = dynamics_model.TailArea/dynamics_model.Area
-        cl = wingcl + tailcl * Arat
+        cl = wingcl
         cd = wingcd + tailcd * Arat
-        cm = wingcm - tailcl * 1.5 / dynamics_model.ChordMean * Arat
+        cm = (wingcm
+              - tailcl * 1.75 / dynamics_model.ChordMean * Arat
+              + 0.044 * self.PropulsorModel(dynamics_model.Mass, dynamics_model.ThrottlePosition))
 
         return cl,cd,cm
 
