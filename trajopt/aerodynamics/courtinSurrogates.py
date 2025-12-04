@@ -104,7 +104,7 @@ def dragCoeff(CL,dcj,AR):
 
     # set constant drag, not sure what to use for this except make it "reasonable"
 
-    CD0 = 0.5
+    CD0 = 0.05
 
     # induced drag component
 

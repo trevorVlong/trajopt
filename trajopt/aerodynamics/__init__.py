@@ -22,6 +22,6 @@ from trajopt.aerodynamics.courtinSurrogates import *
 from trajopt.aerodynamics.dragModelling import *
 from trajopt.aerodynamics.propulsorModels import *
 from trajopt.aerodynamics.readXfoilPolar import *
-from trajopt.aerodynamics.SimpleAircraft2D import *
+from trajopt.aerodynamics.ThinAirfoilModel import *
 from trajopt.aerodynamics.SpenceModel import *
 from trajopt.aerodynamics.ThinAirfoilAnalytical2D import *

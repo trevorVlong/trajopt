@@ -167,7 +167,7 @@ class AircraftTrajectoryProblem2D(Opti):
         # constraint problem physics
         # get force, coefficient relationships using aerodynamics model
         L, D, M = self.AeroModel.getForcesAndMoments(self.PhysicsModel)
-        cl, cd, cm = self.AeroModel.fullDynamicsModel(self.PhysicsModel)
+        # cl, cd, cm = self.AeroModel.fullDynamicsModel(self.PhysicsModel)
         thrust = self.AeroModel.thrustModel(self.PhysicsModel)
 
         # add forces and moments to constraints
@@ -302,7 +302,7 @@ class AircraftTrajectoryProblem2D(Opti):
 
 
 if __name__ == "__main__":
-    from trajopt.aerodynamics.SimpleAircraft2D import ThinAirfoilModel
+    from trajopt.aerodynamics.ThinAirfoilModel import ThinAirfoilModel
     from trajopt import Aircraft2DPointMass
 
     # set up models / containers

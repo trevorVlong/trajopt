@@ -1,0 +1,21 @@
+
+How to run python code 
+
+1. Run the following in mac terminal 
+
+gfortran -shared -fPIC -o gust.so uvsing.f lamp.f
+
+python3 -m numpy.f2py -c uvsing.pyf gust.so    
+
+(ignore these  steps it is necessary only to generate uvsing.pyf which I prepared)
+#python3 -m numpy.f2py uvsing.f -m uvsing -h uvsing.pyf  
+#python3 -m numpy.f2py uvsing.f -m uvsing -h --overwrite-signature uvsing.pyf
+
+uvsing.f and lamp.f files computes the gust velocity field. uvsing.pyf is the python to fortran interface. 
+
+2. Then run 
+
+python calluvsing.py 
+
+this will generate you the velocity field at global x,y,z location.  
+

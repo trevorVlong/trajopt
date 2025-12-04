@@ -65,6 +65,7 @@ class Aircraft2DPointMass(PointMass2D):
         self.ChordMean: float = 0
         self.Area: float = 0
 
+        self. PropulsorArea = 0
         # tail
         self.TailSpan: float = 0
         self.TailChordMean: float = 0

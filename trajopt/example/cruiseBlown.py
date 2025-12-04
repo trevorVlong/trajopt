@@ -15,11 +15,14 @@
 
 from trajopt.main import AircraftTrajectoryProblem2D as trajp
 from trajopt.weather.WindModel2D import WindModel2D
-from trajopt.aerodynamics import ThinAirfoilModel
+from trajopt.aerodynamics import BlownAirfoilModel
 from trajopt.dynamics import Aircraft2DPointMass
 from aerosandbox import numpy as np
 from aerosandbox.numpy.integrate_discrete import integrate_discrete_squared_curvature as int_desc
 from typing import Union,TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from trajopt.main import Problem
 
 
 if TYPE_CHECKING:
@@ -27,7 +30,7 @@ if TYPE_CHECKING:
 
 
 def cruiseProblemTime(
-        problem,
+        problem: "Problem",
         time_array: Union[float,np.ndarray],
         parameters:dict[str,"cas.MX"]
 ) -> trajp:
@@ -48,10 +51,9 @@ def cruiseProblemTime(
     PhysicsModel.TailChordMean = 0.25
     PhysicsModel.Area = 1.09
     PhysicsModel.TailArea = 0.2
+    PhysicsModel.PropulsorArea = 0.06
 
-
-    AeroModel = ThinAirfoilModel()
-
+    AeroModel = BlownAirfoilModel.BlownAirfoilModel()
     # wind model setup (simple gust)
     wind_model = WindModel2D()
 
@@ -106,14 +108,12 @@ def cruiseProblemTime(
         problem.PhysicsModel.Pitch[-1] ** 2 <= 36,
         problem.PhysicsModel.glide_slope[-1]**2 <=0.1,
 
-
     ])
 
     # General Constraints
     dThrottle = np.diff(dyn.ThrottlePosition)
     dElevator = np.diff(dyn.ElevatorPosition)
     dTime = np.diff(problem.Time)
-
     throttle_rate = dThrottle/dTime
     elev_rate = dElevator/dTime
 
@@ -121,6 +121,7 @@ def cruiseProblemTime(
         throttle_rate**2 <= 0.8,
         elev_rate**2 <= 225,
         problem.PhysicsModel.Altitude >= 50,
+        AeroModel.thrustModel(dyn) >=0
     ])
 
     # optimization problem

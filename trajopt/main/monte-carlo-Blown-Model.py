@@ -28,9 +28,8 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import numpy as np
-from trajopt.example.cruiseExample import cruiseProblemTime
+from trajopt.example.cruiseBlown import cruiseProblemTime
 from trajopt.aerodynamics.courtinSurrogates import *
-from trajopt.aerodynamics.aeroUtility import jetMomentumCoefficient
 from typing import TYPE_CHECKING
 import pathlib as path
 if TYPE_CHECKING:
@@ -90,6 +89,7 @@ def monteCarloCruise(problem: 'Trajprob',
     print('here')
     return data,run_deck
 
+
 if __name__ == "__main__":
 
     from trajopt.dynamics.visualization import visualizeRun2D
@@ -97,6 +97,7 @@ if __name__ == "__main__":
     from trajopt.main import AircraftTrajectoryProblem2D as Trajprob
 
     time = np.arange(0,15,0.25)
+    num_runs = 1
     parameters = {
         "InitialXPosition":{"avg": 0,"std": 10,"static":True},
         "InitialAltitude": {"avg": 100, "std": 10, "static": True},
@@ -109,7 +110,7 @@ if __name__ == "__main__":
     }
     cache_name = path.PosixPath('/Users/TrevorLong/Desktop/test_cache.json')
     problem = Trajprob(save_to_cache_on_solve=True,cache_filename=str(cache_name))
-    data,params = monteCarloCruise(problem,time,num_runs=10, initial_conditions=parameters)
+    data, params = monteCarloCruise(problem,time,num_runs=1, initial_conditions=parameters)
     fig,ax = plt.subplots()
     fig2,ax2 = plt.subplots()
     fig3,ax3 = plt.subplots()
@@ -117,6 +118,7 @@ if __name__ == "__main__":
     fig5,ax5 = plt.subplots()
     fig6,ax6 = plt.subplots()
     pkeys = list(params.keys())
+
     for idx,ds in data.items():
 
         ax.scatter(ds['time'],ds['results'].Altitude,label=f'run {idx})')
