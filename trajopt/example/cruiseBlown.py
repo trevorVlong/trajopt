@@ -93,43 +93,29 @@ def cruiseProblemTime(
         problem.PhysicsModel.Altitude[0] == parameters['InitialAltitude'],
         problem.PhysicsModel.EarthXPosition[0] == parameters['InitialXPosition'],
         problem.PhysicsModel.BodyXVelocity[0]== parameters['InitialXVelocity'],
-        problem.PhysicsModel.BodyZVelocity[0]**2 <= 1,
         # problem.PhysicsModel.Fz_b[0]**2<=0.1,
-        problem.PhysicsModel.My_b[0]**2 <=0.1,
-        problem.PhysicsModel.ThrottlePosition[0] == parameters['InitialThrottle']
     ])
 
     # Final Conditions
     problem.subject_to([
         problem.PhysicsModel.PitchRate[-1]**2 <= 0.1,
-        problem.PhysicsModel.AccelXBody[-1]**2 <= 0.1,
-        problem.PhysicsModel.AccelZBody[-1]**2 <=0.1,
     ])
 
     # General Constraints
-    dThrottle = np.diff(dyn.ThrottlePosition)
-    dElevator = np.diff(dyn.ElevatorPosition)
+    dXe = np.diff(dyn.EarthXPosition)
     dTime = np.diff(problem.Time)
-    throttle_rate = dThrottle/dTime
-    elev_rate = dElevator/dTime
 
     problem.subject_to([
-        throttle_rate**2 <= 0.8,
-        dyn.ThrottlePosition>0.2,
-        elev_rate**2 <= 225,
-        dyn.Pitch**2 <150,
-        dyn.ElevatorPosition**2 < 25**2,
+        dyn.ThrottlePosition>0.01,
         problem.PhysicsModel.Altitude >= 50,
-        AeroModel.thrustModel(dyn) >=0,
         AeroModel.DeltaCJ(dyn) <= 4,
-        dyn.Airspeed>0
+        dXe>0
     ])
 
     # optimization problem
     curv = (int_desc(dyn.ElevatorPosition, problem.Time)
             + int_desc(dyn.ThrottlePosition, problem.Time)
-            + int_desc(dyn.ElevatorPosition, problem.Time)
-            + int_desc(dyn.Pitch,problem.Time)
+
             )
 
     # cost function for the optimizer to work against

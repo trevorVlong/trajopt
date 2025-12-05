@@ -57,7 +57,11 @@ def liftCoeff(alfa,delta_f,delta_cj):
     return (f1+f2+f3)
 
 
-def pitchingCoeff(alfa, delta_f, delta_cj,kcm=0.026742167754172878):
+def pitchingCoeff(alfa,
+                  delta_f,
+                  delta_cj,
+                  kcm=0.026742167754172878
+                  ):
     """
     pitching coefficient surrogate model fit taking the form given by courtin in E.23->E.29. makes simplification that
     j1,j2 are equal and that both are the flap angle delta_f
@@ -72,11 +76,12 @@ def pitchingCoeff(alfa, delta_f, delta_cj,kcm=0.026742167754172878):
     c2 = 0.34665351263951344
     c3 = 1.5559404419338987
     c4 = 2.9807541796426764
-    c5 = 0.0571633527923581
-    c6 = 0.066987185621259465
+    c5 = 0.066987185621259465
+    c6 = 0.0571633527923581
     c7 = 1.5916825476679692
-    c8 = -0.022325765619084521
-    c9 =  0.41839935591723748
+    c8 = 0.41839935591723748,
+    c9 = -0.022325765619084521
+
 
     # write out func in 3 parts to make easier to read
 
@@ -84,10 +89,10 @@ def pitchingCoeff(alfa, delta_f, delta_cj,kcm=0.026742167754172878):
     f1 = c1 + c2*delta_f + c3*alfa
 
     # square root part w.r.t. cj
-    f2 = delta_cj ** 0.5 * (c4 + c5*delta_f + c6 * alfa)
+    f2 = delta_cj ** 0.5 * (c4 + c5*alfa + c6 * delta_f)
 
     # linear part w.r.t. cj
-    f3 = delta_cj * (c7 + c8*delta_f + c9*alfa)
+    f3 = delta_cj * (c7 + c8*alfa + c9*delta_f)
 
     return kcm * (f1+f2+f3)
 

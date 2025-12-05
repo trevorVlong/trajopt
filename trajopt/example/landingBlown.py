@@ -92,10 +92,9 @@ def landingProblemTime(
     problem.subject_to([
         dyn.Altitude[0] == parameters['InitialAltitude'],
         dyn.EarthXPosition[0] == parameters['InitialXPosition'],
-        dyn.BodyXVelocity[0] == parameters['InitialXVelocity'],
-        dyn.BodyZVelocity[0] == 0.00001,
+        dyn.Airspeed[0] == parameters['InitialXVelocity'],
+        dyn.BodyZVelocity[0]**2 > 0.00001,
         # problem.PhysicsModel.Fz_b[0]**2<=0.1,
-        dyn.Pitch[0]**2 <= 100,
     ])
 
     # Final Conditions
@@ -113,17 +112,18 @@ def landingProblemTime(
     elev_rate = dElevator/dTime
 
     problem.subject_to([
-        throttle_rate**2 < 0.8,
+        throttle_rate**2 < 0.6,
         dyn.ThrottlePosition < 1,
-        dyn.ThrottlePosition > 0,
+        dyn.ThrottlePosition > 0.05,
         elev_rate**2 <= 25**2,
         problem.PhysicsModel.Altitude >= 0,
-        dyn.Airspeed > 0
+        dyn.Airspeed > 5
     ])
 
     # optimization problem
     curv = np.sum(int_desc(dyn.ElevatorPosition, problem.Time)
-            + np.sum(int_desc(dyn.PitchRate, problem.Time))
+            + int_desc(dyn.ThrottlePosition, problem.Time)
+            + int_desc(dyn.Pitch, problem.Time)
             )
 
     # cost function for the optimizer to work against
