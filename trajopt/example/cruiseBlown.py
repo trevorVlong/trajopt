@@ -95,8 +95,7 @@ def cruiseProblemTime(
         problem.PhysicsModel.BodyXVelocity[0]== parameters['InitialXVelocity'],
         problem.PhysicsModel.BodyZVelocity[0]**2 <= 1,
         # problem.PhysicsModel.Fz_b[0]**2<=0.1,
-        problem.PhysicsModel.PitchRate[0]**2 <= .10,
-        problem.PhysicsModel.Pitch[0] == parameters['InitialPitch'],
+        problem.PhysicsModel.My_b[0]**2 <=0.1,
         problem.PhysicsModel.ThrottlePosition[0] == parameters['InitialThrottle']
     ])
 
@@ -122,12 +121,16 @@ def cruiseProblemTime(
         dyn.ElevatorPosition**2 < 25**2,
         problem.PhysicsModel.Altitude >= 50,
         AeroModel.thrustModel(dyn) >=0,
-        AeroModel.DeltaCJ(dyn) <= 3.7,
+        AeroModel.DeltaCJ(dyn) <= 4,
         dyn.Airspeed>0
     ])
 
     # optimization problem
-    curv = int_desc(dyn.ElevatorPosition, problem.Time) + int_desc(dyn.ThrottlePosition, problem.Time)
+    curv = (int_desc(dyn.ElevatorPosition, problem.Time)
+            + int_desc(dyn.ThrottlePosition, problem.Time)
+            + int_desc(dyn.ElevatorPosition, problem.Time)
+            + int_desc(dyn.Pitch,problem.Time)
+            )
 
     # cost function for the optimizer to work against
     problem.minimize(

@@ -45,7 +45,7 @@ class BlownAirfoilModel(AeroModel):
         self.MomentCoeff = None
 
         # offsets etc
-        self.TailOffsetAngle = 5 # deg
+        self.TailOffsetAngle = 0 # deg
         self.WingCmOffset = -0
     def tailDynamicsModel(self,
                           dynModel:"Aircraft2DPointMass",

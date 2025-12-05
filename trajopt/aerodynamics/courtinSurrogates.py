@@ -33,15 +33,15 @@ def liftCoeff(alfa,delta_f,delta_cj):
     """
 
     # parametrs given
-    c1 = 0.1856
-    c2 = 0.0334
-    c3 = 0.0667
-    c4 = 0.0121
-    c5 = -0.0085
-    c6 = 0.0426
-    c7 = 0.0140
-    c8 = 0.0226
-    c9 = 0.1407
+    c1 = 0.17393147100369052
+    c2 = 0.04328739694732299
+    c3 = 0.071558470519236153,
+    c4 = -0.054920065885208584
+    c5 = 0.0058203748529351111
+    c6 = 0.013363112319483228
+    c7 = 0.14929493910579744
+    c8 = 0.020942459756803311
+    c9 = 0.014613208226675497
 
     # write out func in 3 parts to make easier to read
 
@@ -49,15 +49,15 @@ def liftCoeff(alfa,delta_f,delta_cj):
     f1 = c1 + c2*delta_f + c3*alfa
 
     # square root part w.r.t. cj
-    f2 = delta_cj ** 0.5 * (c4 * delta_f + c5 * alfa + c7)
+    f2 = delta_cj ** 0.5 * (c4 + c5*alfa + c6*delta_f)
 
     # linear part w.r.t. cj
-    f3 = delta_cj * (c6*delta_f + c8*alfa + c9)
+    f3 = delta_cj * (c7 + c8*alfa + c9*delta_f)
 
     return (f1+f2+f3)
 
 
-def pitchingCoeff(alfa, delta_f, delta_cj,kcm=1):
+def pitchingCoeff(alfa, delta_f, delta_cj,kcm=0.026742167754172878):
     """
     pitching coefficient surrogate model fit taking the form given by courtin in E.23->E.29. makes simplification that
     j1,j2 are equal and that both are the flap angle delta_f
@@ -68,25 +68,26 @@ def pitchingCoeff(alfa, delta_f, delta_cj,kcm=1):
     """
 
     # parametrs given
-    c1 = -0.128
-    c2 = -0.0114
-    c3 = -0.0387
-    c4 = -0.0143
-    c5 = 0.0278
-    c6 = 0.0174
-    c7 = -0.0120
-    c8 = -0.0017
-    c9 =  0.0238
+    c1 = -0.92881726478798543
+    c2 = 0.34665351263951344
+    c3 = 1.5559404419338987
+    c4 = 2.9807541796426764
+    c5 = 0.0571633527923581
+    c6 = 0.066987185621259465
+    c7 = 1.5916825476679692
+    c8 = -0.022325765619084521
+    c9 =  0.41839935591723748
+
     # write out func in 3 parts to make easier to read
 
     # const part w.r.t. cj
     f1 = c1 + c2*delta_f + c3*alfa
 
     # square root part w.r.t. cj
-    f2 = delta_cj ** 0.5 * (c4 * delta_f + c5 * alfa + c6)
+    f2 = delta_cj ** 0.5 * (c4 + c5*delta_f + c6 * alfa)
 
     # linear part w.r.t. cj
-    f3 = delta_cj * (c7*delta_f + c8*alfa + c9)
+    f3 = delta_cj * (c7 + c8*delta_f + c9*alfa)
 
     return kcm * (f1+f2+f3)
 
