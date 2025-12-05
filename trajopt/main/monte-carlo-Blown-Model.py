@@ -28,7 +28,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import numpy as np
-from trajopt.example.cruiseExample import cruiseProblemTime
+from trajopt.example.cruiseBlown import cruiseProblemTime
 from trajopt.aerodynamics.courtinSurrogates import *
 from trajopt.aerodynamics.aeroUtility import jetMomentumCoefficient
 from typing import TYPE_CHECKING
@@ -100,12 +100,12 @@ if __name__ == "__main__":
     parameters = {
         "InitialXPosition":{"avg": 0,"std": 10,"static":True},
         "InitialAltitude": {"avg": 100, "std": 10, "static": True},
-        "InitialXVelocity": {"avg": 17.5, "std": 1, "static": True},
+        "InitialXVelocity": {"avg": 8, "std": 1, "static": True},
         "InitialZVelocity": {"avg": 0, "std": 0.05, "static": True},
         "InitialPitch": {"avg": 3, "std": 10, "static": True},
-        "gust_vel": {'avg':0,"std":6,"static":True},
+        "gust_vel": {'avg':0,"std":6,"static":False},
         "InitialThrottle": {'avg':0.75,'std':0,'static':True},
-        "FlapAngle":{'avg':0,'std':5,'static':False}
+        "FlapAngle":{'avg':40,'std':5,'static':True}
     }
     cache_name = path.PosixPath('/Users/TrevorLong/Desktop/test_cache.json')
     problem = Trajprob(save_to_cache_on_solve=True,cache_filename=str(cache_name))

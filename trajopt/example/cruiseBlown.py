@@ -119,6 +119,7 @@ def cruiseProblemTime(
         throttle_rate**2 <= 0.8,
         elev_rate**2 <= 225,
         problem.PhysicsModel.Altitude >= 50,
+        dyn.Pitch**2 <100
     ])
 
     # optimization problem
@@ -127,8 +128,8 @@ def cruiseProblemTime(
     # cost function for the optimizer to work against
     problem.minimize(
         1e-4 * np.sum(curv)
-        + np.sum((dyn.Altitude[0]-dyn.Altitude[1:])**2 / 1e2)
-        + np.sum((dyn.Airspeed[0]-dyn.Airspeed[1:])**2)/1e4
+        + dyn.Altitude[-1]
+        + np.mean(dyn.Airspeed)
     )
 
     return problem
