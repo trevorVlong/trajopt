@@ -114,7 +114,8 @@ def dragCoeff(CL,dcj,AR):
 
     # induced drag component
 
-    CDi = CL**2 / (np.pi * AR *0.426 + 2*dcj)
+    CDi = CL**2 / (np.pi * AR * 0.426 + 2*dcj)
+    # CDi = CL ** 2 / (np.pi * AR * 0.6 + 2 * dcj)
 
     return CD0 + CDi
 
@@ -149,13 +150,13 @@ if __name__ == "__main__":
         vrat = np.sqrt(Tidx / (0.5 * rho * Vinf ** 2 * Adisk) + 1)
         dcj = Adisk/Sref * (vrat**2-1)*(vrat**2 + 1)
         cl = liftCoeff(alfas,flapang,dcj)
-        cd = dragCoeff(cl,dcj,AR) - Tidx/(0.5*rho*Vinf**2*Adisk)
+        cx = dragCoeff(cl,dcj,AR) - Tidx/(0.5*rho*Vinf**2*Adisk)
         cm = pitchingCoeff(alfas,flapang,dcj)
         print(f"{dcj}")
 
         axs[0, 0].plot(alfas, cl)
 
-        axs[0, 1].plot(alfas, cd)
+        axs[0, 1].plot(alfas, cx)
         axs[1, 0].plot(alfas, cm)
         axs[1, 1].plot(cl, cm)
     axs[0, 0].grid()
@@ -164,7 +165,7 @@ if __name__ == "__main__":
     axs[1, 0].grid()
     axs[0, 0].set_ylabel('cl')
     axs[0, 0].set_xlabel('alfa')
-    axs[0, 1].set_ylabel('cd')
+    axs[0, 1].set_ylabel('cx')
     axs[0, 1].set_xlabel('alfa')
     axs[1, 0].set_ylabel('cm')
     axs[1, 0].set_xlabel('alfa')

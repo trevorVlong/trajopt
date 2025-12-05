@@ -15,14 +15,11 @@
 
 from trajopt.main import AircraftTrajectoryProblem2D as trajp
 from trajopt.weather.WindModel2D import WindModel2D
-from trajopt.aerodynamics import BlownAirfoilModel
+from trajopt.aerodynamics import ThinAirfoilModel
 from trajopt.dynamics import Aircraft2DPointMass
 from aerosandbox import numpy as np
 from aerosandbox.numpy.integrate_discrete import integrate_discrete_squared_curvature as int_desc
 from typing import Union,TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from trajopt.main import Problem
 
 
 if TYPE_CHECKING:
@@ -30,7 +27,7 @@ if TYPE_CHECKING:
 
 
 def cruiseProblemTime(
-        problem: "Problem",
+        problem,
         time_array: Union[float,np.ndarray],
         parameters:dict[str,"cas.MX"]
 ) -> trajp:
@@ -51,9 +48,10 @@ def cruiseProblemTime(
     PhysicsModel.TailChordMean = 0.25
     PhysicsModel.Area = 1.09
     PhysicsModel.TailArea = 0.2
-    PhysicsModel.PropulsorArea = 0.06
 
-    AeroModel = BlownAirfoilModel.BlownAirfoilModel()
+
+    AeroModel = ThinAirfoilModel()
+
     # wind model setup (simple gust)
     wind_model = WindModel2D()
 
@@ -93,30 +91,38 @@ def cruiseProblemTime(
         problem.PhysicsModel.Altitude[0] == parameters['InitialAltitude'],
         problem.PhysicsModel.EarthXPosition[0] == parameters['InitialXPosition'],
         problem.PhysicsModel.BodyXVelocity[0]== parameters['InitialXVelocity'],
+        problem.PhysicsModel.BodyZVelocity[0]**2 <= 1,
         # problem.PhysicsModel.Fz_b[0]**2<=0.1,
+        problem.PhysicsModel.PitchRate[0]**2 <= .10,
+        problem.PhysicsModel.Pitch[0] == parameters['InitialPitch'],
+        problem.PhysicsModel.ThrottlePosition[0] == parameters['InitialThrottle']
     ])
 
     # Final Conditions
     problem.subject_to([
         problem.PhysicsModel.PitchRate[-1]**2 <= 0.1,
+        problem.PhysicsModel.AccelXBody[-1]**2 <= 0.1,
+        problem.PhysicsModel.AccelZBody[-1]**2 <=0.1,
+        problem.PhysicsModel.Pitch[-1] ** 2 <= 36,
+        problem.PhysicsModel.glide_slope[-1]**2 <=0.1,
     ])
 
     # General Constraints
-    dXe = np.diff(dyn.EarthXPosition)
+    dThrottle = np.diff(dyn.ThrottlePosition)
+    dElevator = np.diff(dyn.ElevatorPosition)
     dTime = np.diff(problem.Time)
 
+    throttle_rate = dThrottle/dTime
+    elev_rate = dElevator/dTime
+
     problem.subject_to([
-        dyn.ThrottlePosition>0.01,
+        throttle_rate**2 <= 0.8,
+        elev_rate**2 <= 225,
         problem.PhysicsModel.Altitude >= 50,
-        AeroModel.DeltaCJ(dyn) <= 4,
-        dXe>0
     ])
 
     # optimization problem
-    curv = (int_desc(dyn.ElevatorPosition, problem.Time)
-            + int_desc(dyn.ThrottlePosition, problem.Time)
-
-            )
+    curv = int_desc(dyn.ElevatorPosition, problem.Time) + int_desc(dyn.ThrottlePosition, problem.Time)
 
     # cost function for the optimizer to work against
     problem.minimize(

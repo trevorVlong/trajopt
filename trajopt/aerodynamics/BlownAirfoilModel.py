@@ -92,8 +92,7 @@ class BlownAirfoilModel(AeroModel):
         alfa = dynModel.Alpha
         delta_f = dynModel.FlapPosition
         delta_cj = self.DeltaCJ(dynModel)
-        cd0 = 0.05 # zero-lift drag
-
+        cd0 = 0.00 # zero-lift drag
 
         # cl
         cl = self.WingLiftCoeffFunction(alfa,delta_f,delta_cj)

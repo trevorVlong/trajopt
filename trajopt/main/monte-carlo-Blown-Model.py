@@ -28,8 +28,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import numpy as np
-from trajopt.example.cruiseBlown import cruiseProblemTime
-
+from trajopt.example.cruiseExample import cruiseProblemTime
 from trajopt.aerodynamics.courtinSurrogates import *
 from trajopt.aerodynamics.aeroUtility import jetMomentumCoefficient
 from typing import TYPE_CHECKING
@@ -99,14 +98,14 @@ if __name__ == "__main__":
 
     time = np.arange(0,15,0.25)
     parameters = {
-        "InitialXPosition":{"avg": -70,"std": 10,"static":True},
+        "InitialXPosition":{"avg": 0,"std": 10,"static":True},
         "InitialAltitude": {"avg": 100, "std": 10, "static": True},
         "InitialXVelocity": {"avg": 17.5, "std": 1, "static": True},
         "InitialZVelocity": {"avg": 0, "std": 0.05, "static": True},
         "InitialPitch": {"avg": 3, "std": 10, "static": True},
-        "gust_vel": {'avg':0,"std":6,"static":False},
+        "gust_vel": {'avg':0,"std":6,"static":True},
         "InitialThrottle": {'avg':0.75,'std':0,'static':True},
-        "FlapAngle":{'avg':0,'std':5,'static':True}
+        "FlapAngle":{'avg':0,'std':5,'static':False}
     }
     cache_name = path.PosixPath('/Users/TrevorLong/Desktop/test_cache.json')
     problem = Trajprob(save_to_cache_on_solve=True,cache_filename=str(cache_name))
@@ -120,7 +119,7 @@ if __name__ == "__main__":
     pkeys = list(params.keys())
     for idx,ds in data.items():
 
-        ax.scatter(ds['results'].EarthXPosition,ds['results'].Altitude,label=f'run {idx})')
+        ax.scatter(ds['time'],ds['results'].Altitude,label=f'run {idx})')
         ax3.plot(ds['time'],ds['results'].ElevatorPosition,label=f'run {idx}',
                  marker='+')
         ax4.plot(ds['time'],ds['results'].ThrottlePosition,label=f'run {idx}',marker='*')

@@ -105,7 +105,7 @@ if __name__ == "__main__":
         "InitialPitch": {"avg": 3, "std": 10, "static": True},
         "gust_vel": {'avg':0,"std":6,"static":True},
         "InitialThrottle": {'avg':0.75,'std':0,'static':True},
-        "FlapAngle":{'avg':10,'std':5,'static':False}
+        "FlapAngle":{'avg':0,'std':5,'static':False}
     }
     cache_name = path.PosixPath('/Users/TrevorLong/Desktop/test_cache.json')
     problem = Trajprob(save_to_cache_on_solve=True,cache_filename=str(cache_name))

@@ -105,8 +105,6 @@ def cruiseProblemTime(
         problem.PhysicsModel.AccelZBody[-1]**2 <=0.1,
         problem.PhysicsModel.Pitch[-1] ** 2 <= 36,
         problem.PhysicsModel.glide_slope[-1]**2 <=0.1,
-
-
     ])
 
     # General Constraints
