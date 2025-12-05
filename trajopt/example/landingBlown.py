@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     import casadi as cas
 
 
-def cruiseProblemTime(
+def landingProblemTime(
         problem: "Problem",
         time_array: Union[float,np.ndarray],
         parameters:dict[str,"cas.MX"]
@@ -90,21 +90,19 @@ def cruiseProblemTime(
 
     # Initial Conditions
     problem.subject_to([
-        problem.PhysicsModel.Altitude[0] == parameters['InitialAltitude'],
-        problem.PhysicsModel.EarthXPosition[0] == parameters['InitialXPosition'],
-        problem.PhysicsModel.BodyXVelocity[0]== parameters['InitialXVelocity'],
-        problem.PhysicsModel.BodyZVelocity[0]**2 <= 1,
+        dyn.Altitude[0] == parameters['InitialAltitude'],
+        dyn.EarthXPosition[0] == parameters['InitialXPosition'],
+        dyn.BodyXVelocity[0] == parameters['InitialXVelocity'],
+        dyn.BodyZVelocity[0] == 0.00001,
         # problem.PhysicsModel.Fz_b[0]**2<=0.1,
-        problem.PhysicsModel.PitchRate[0]**2 <= .10,
-        problem.PhysicsModel.Pitch[0] == parameters['InitialPitch'],
-        problem.PhysicsModel.ThrottlePosition[0] == parameters['InitialThrottle']
+        dyn.Pitch[0]**2 <= 100,
     ])
 
     # Final Conditions
     problem.subject_to([
-        problem.PhysicsModel.PitchRate[-1]**2 <= 0.1,
-        problem.PhysicsModel.AccelXBody[-1]**2 <= 0.1,
-        problem.PhysicsModel.AccelZBody[-1]**2 <=0.1,
+        dyn.PitchRate[-1]**2 <= 2,
+        dyn.Pitch[-1] >= 0,
+        dyn.Altitude[-1]<=0.5
     ])
 
     # General Constraints
@@ -115,25 +113,23 @@ def cruiseProblemTime(
     elev_rate = dElevator/dTime
 
     problem.subject_to([
-        throttle_rate**2 <= 0.8,
-        dyn.ThrottlePosition>0.2,
-        elev_rate**2 <= 225,
-        dyn.Pitch**2 <150,
-        dyn.ElevatorPosition**2 < 25**2,
-        problem.PhysicsModel.Altitude >= 50,
-        AeroModel.thrustModel(dyn) >=0,
-        AeroModel.DeltaCJ(dyn) <= 3.7,
-        dyn.Airspeed>0
+        throttle_rate**2 < 0.8,
+        dyn.ThrottlePosition < 1,
+        dyn.ThrottlePosition > 0,
+        elev_rate**2 <= 25**2,
+        problem.PhysicsModel.Altitude >= 0,
+        dyn.Airspeed > 0
     ])
 
     # optimization problem
-    curv = int_desc(dyn.ElevatorPosition, problem.Time) + int_desc(dyn.ThrottlePosition, problem.Time)
+    curv = np.sum(int_desc(dyn.ElevatorPosition, problem.Time)
+            + np.sum(int_desc(dyn.PitchRate, problem.Time))
+            )
 
     # cost function for the optimizer to work against
     problem.minimize(
-        1e-4 * np.sum(curv)
-        + np.sum((dyn.Altitude[0]-dyn.Altitude[1:])**2 / 1e2)
-        + np.sum((dyn.Airspeed[0]-dyn.Airspeed[1:])**2)/1e4
+        1e-4 * curv
+        + dyn.EarthXPosition[-1]**2
     )
 
     return problem
@@ -142,7 +138,7 @@ def cruiseProblemTime(
 if __name__=="__main__":
 
     time_array = np.arange(0,10,.10)
-    problem = cruiseProblemTime(time_array)
+    problem = landingProblemTime(time_array)
     problem.solve()
 
     from trajopt.dynamics.visualization import visualizeRun2D

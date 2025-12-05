@@ -96,12 +96,12 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from trajopt.main import AircraftTrajectoryProblem2D as Trajprob
 
-    time = np.arange(0,15,0.25)
+    time = np.arange(0,5,0.05)
     num_runs = 1
     parameters = {
         "InitialXPosition":{"avg": 0,"std": 10,"static":True},
         "InitialAltitude": {"avg": 100, "std": 10, "static": True},
-        "InitialXVelocity": {"avg": 17.5, "std": 1, "static": True},
+        "InitialXVelocity": {"avg": 15, "std": 1, "static": True},
         "InitialZVelocity": {"avg": 0, "std": 0.05, "static": True},
         "InitialPitch": {"avg": 3, "std": 10, "static": True},
         "gust_vel": {'avg':0,"std":6,"static":True},
@@ -121,20 +121,21 @@ if __name__ == "__main__":
 
     for idx,ds in data.items():
 
-        ax.scatter(ds['time'],ds['results'].Altitude,label=f'run {idx})')
-        ax3.plot(ds['time'],ds['results'].ElevatorPosition,label=f'run {idx}',
+        # plotting of results
+        ax.plot(ds['time'],ds['results'].Altitude,label=f'run {idx})')
+        ax2.plot(ds['time'],ds['results'].ElevatorPosition,label=f'run {idx}',
                  marker='+')
-        ax4.plot(ds['time'],ds['results'].ThrottlePosition,label=f'run {idx}',marker='*')
-        ax5.plot(ds['time'], ds['results'].Pitch, label=f'run {idx}')
-        ax6.plot(ds['time'],ds['results'].Airspeed,label=f'run {idx}',marker='*')
-        if idx>0:
-            pkey = pkeys[idx-1]
-            ax2.scatter(idx,params[pkey]['gust_vel'],label=f'run {idx})')
-        ax.legend()
-        ax2.legend()
-        ax3.legend()
-        ax4.legend()
-        ax5.legend()
+        ax3.plot(ds['time'],ds['results'].ThrottlePosition,label=f'run {idx}',marker='*')
+        ax4.plot(ds['time'], ds['results'].Pitch, label=f'run {idx}')
+        ax5.plot(ds['time'],ds['results'].Airspeed,label=f'run {idx}',marker='*')
+        ax6.plot(ds['time'], problem.AeroModel.DeltaCJ(ds['results']), label=f'run {idx}', marker='*')
 
-    print('done')
+    ax.legend()
+    ax2.legend()
+    ax3.legend()
+    ax4.legend()
+    ax5.legend()
+    ax6.legend()
+
     plt.show()
+    print('done')
