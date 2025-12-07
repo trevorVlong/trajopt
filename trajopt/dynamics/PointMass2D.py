@@ -128,8 +128,8 @@ class PointMass2D(AeroSandboxObject):
         return {
             "EarthXPosition": self.EarthXVelocity,
             "EarthZPosition": self.EarthZVelocity,
-            "BodyXVelocity": self.AccelXBody,
-            "BodyZVelocity": self.AccelZBody,
+            "BodyXVelocity": self.AccelXBody + self.PitchRate*np.pi/180 * self.BodyZVelocity,
+            "BodyZVelocity": self.AccelZBody - self.PitchRate*np.pi/180 * self.BodyXVelocity,
             "Pitch": self.PitchRate,
             "PitchRate": self.PitchAccel
         }
