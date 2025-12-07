@@ -54,7 +54,7 @@ def liftCoeff(alfa,delta_f,delta_cj):
     # linear part w.r.t. cj
     f3 = delta_cj * (c7 + c8*alfa + c9*delta_f)
 
-    return (f1+f2+f3)
+    return f1+f2+f3
 
 
 def pitchingCoeff(alfa,
