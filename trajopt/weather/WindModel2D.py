@@ -16,6 +16,7 @@
 import aerosandbox.numpy as np
 from typing import Union
 from warnings import warn
+from trajopt.weather.updraft import updraft
 import matplotlib.pyplot as plt
 
 
@@ -30,6 +31,7 @@ class WindModel2D:
         self.ModelList = [
             "gaussian1D",
             "none",
+            "singularity",
         ] # list of available models
 
         # model parameters
@@ -69,7 +71,7 @@ class WindModel2D:
             # TODO when more models are added
 
     def windSpeed(self,
-                  x:Union[np.ndarray,float] = 0,
+                  x: Union[np.ndarray,float] = 0,
                   y: Union[np.ndarray,float] = 0,
                   z: Union[np.ndarray,float] = 0,
                   ) -> (Union[np.ndarray,float],Union[np.ndarray,float],Union[np.ndarray,float]):
@@ -88,6 +90,7 @@ class WindModel2D:
         model = {
             "gaussian1D": self._gaussian1D,
             "none": self._nowind,
+            "singularity":self._singularity,
         }
 
         return model[self.CurrentModel](x=x,y=y,z=z)
@@ -117,6 +120,17 @@ class WindModel2D:
         else:
             warn(f"Axis choice {self.Axis} is not valid, must be x,y, or z")
 
+    def _singularity(self,
+                     x:float,
+                     y:float,
+                     z:float,):
+        """
+        use singularity-based vertical gust model. See updraft.py for details
+        """
+
+        xvel, zvel = updraft(x,z,self.Center,0.21,self.MaxGustVelocity)
+
+        return xvel,np.zeros(xvel.shape),zvel
     def _nowind(self,
                 x:Union[np.ndarray, float],
                 y: Union[np.ndarray, float],

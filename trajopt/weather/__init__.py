@@ -15,3 +15,4 @@
 
 
 from trajopt.weather.WindModel2D import *
+from trajopt.weather.updraft import *

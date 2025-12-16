@@ -8,11 +8,11 @@ updated for current use Tue 16 Dec, 2025
 @author: tlong
 """
 import numpy as np
-import uvsing
+import trajopt.weather.uvsing as uvsing
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-uvsing.__doc__
+#uvsing.__doc__
 
 
 # 1  Vortex_pan -0.200000     -0.200000       1.00000      0.100000       10.0000      0.100000                 0.21000
