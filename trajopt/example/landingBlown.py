@@ -15,22 +15,19 @@
 
 from trajopt.main import AircraftTrajectoryProblem2D as trajp
 from trajopt.weather.WindModel2D import WindModel2D
-from trajopt.aerodynamics import BlownAirfoilModel
+from trajopt.aerodynamics.BlownAirfoilModel import BlownAirfoilModel
 from trajopt.dynamics import Aircraft2DPointMass
 from aerosandbox import numpy as np
 from aerosandbox.numpy.integrate_discrete import integrate_discrete_squared_curvature as int_desc
 from typing import Union,TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from trajopt.main import Problem
 
 
 if TYPE_CHECKING:
     import casadi as cas
 
 
-def landingProblemTime(
-        problem: "Problem",
+def cruiseProblemTime(
+        problem,
         time_array: Union[float,np.ndarray],
         parameters:dict[str,"cas.MX"]
 ) -> trajp:
@@ -51,15 +48,17 @@ def landingProblemTime(
     PhysicsModel.TailChordMean = 0.25
     PhysicsModel.Area = 1.09
     PhysicsModel.TailArea = 0.2
-    PhysicsModel.PropulsorArea = 0.06
+    PhysicsModel.PropulsorArea=0.06
 
-    AeroModel = BlownAirfoilModel.BlownAirfoilModel()
+
+    AeroModel = BlownAirfoilModel()
+
     # wind model setup (simple gust)
     wind_model = WindModel2D()
 
     wind_model.setParameters(model_name='gaussian1D',
                                     **{'STD': 10,
-                                       'center': 75,
+                                       'center': 40,
                                        'MaxGustVelocity': -parameters['gust_vel'],
                                        'axis': 'z'}
                                     )
@@ -90,46 +89,62 @@ def landingProblemTime(
 
     # Initial Conditions
     problem.subject_to([
-        dyn.Altitude[0] == parameters['InitialAltitude'],
-        dyn.EarthXPosition[0] == parameters['InitialXPosition'],
-        dyn.Airspeed[0] == parameters['InitialXVelocity'],
-        dyn.BodyZVelocity[0]**2 > 0.00001,
+        problem.PhysicsModel.Altitude[0] == parameters['InitialAltitude'],
+        problem.PhysicsModel.EarthXPosition[0] == parameters['InitialXPosition'],
+        problem.PhysicsModel.BodyXVelocity[0]== parameters['InitialXVelocity'],
+        problem.PhysicsModel.BodyZVelocity[0]**2 <= 1,
         # problem.PhysicsModel.Fz_b[0]**2<=0.1,
+        problem.PhysicsModel.PitchRate[0]**2 <= .10,
+        problem.PhysicsModel.Pitch[0] == parameters['InitialPitch'],
+        problem.PhysicsModel.ThrottlePosition[0] == parameters['InitialThrottle']
     ])
 
     # Final Conditions
     problem.subject_to([
-        dyn.PitchRate[-1]**2 <= 2,
-        dyn.Pitch[-1] >= 0,
-        dyn.Altitude[-1]<=0.5
+        problem.PhysicsModel.PitchRate[-1]**2 <= 0.1,
+        problem.PhysicsModel.AccelXBody[-1]**2 <= 0.1,
+        problem.PhysicsModel.Pitch[-1] >= 1,
+        dyn.Altitude[-1]<0.1,
+        dyn.EarthZVelocity[-1]**2 < 1,
+        (dyn.EarthXPosition[-1]-75)**2 < 25,
+        dyn.Airspeed[-1] < 3,
     ])
 
     # General Constraints
     dThrottle = np.diff(dyn.ThrottlePosition)
     dElevator = np.diff(dyn.ElevatorPosition)
+    dDCJ = np.diff(AeroModel.DeltaCJ(dyn))
     dTime = np.diff(problem.Time)
+    dMom = np.diff(dyn.My_b)
+
     throttle_rate = dThrottle/dTime
     elev_rate = dElevator/dTime
+    dcjRate = dDCJ/dTime
+    MomRate = dMom/dTime
+    dAlt = np.diff(dyn.Altitude)/dTime
 
     problem.subject_to([
-        throttle_rate**2 < 0.6,
-        dyn.ThrottlePosition < 1,
-        dyn.ThrottlePosition > 0.05,
-        elev_rate**2 <= 25**2,
-        problem.PhysicsModel.Altitude >= 0,
-        dyn.Airspeed > 5
+        throttle_rate**2 <= 0.8,
+        elev_rate**2 <= 225,
+        dyn.Pitch**2 <144,
+        dyn.Pitch > -5,
+        AeroModel.DeltaCJ(dyn)>0.01,
+        AeroModel.DeltaCJ(dyn) < 6,
+        dcjRate**2 < 0.4,
     ])
 
     # optimization problem
-    curv = np.sum(int_desc(dyn.ElevatorPosition, problem.Time)
+    curv = (int_desc(dyn.ElevatorPosition, problem.Time)
             + int_desc(dyn.ThrottlePosition, problem.Time)
-            + int_desc(dyn.Pitch, problem.Time)
+            + int_desc(AeroModel.DeltaCJ(dyn),problem.Time)
+            + int_desc(dyn.My_b,problem.Time)
             )
 
     # cost function for the optimizer to work against
     problem.minimize(
-        1e-4 * curv
-        + dyn.EarthXPosition[-1]**2
+        1e-6 * np.sum(curv)
+        + np.sum((dyn.glide_slope - 7)**2)
+        + 10*np.sum((dyn.EarthXPosition[-1] - 75)**2)
     )
 
     return problem
@@ -138,7 +153,7 @@ def landingProblemTime(
 if __name__=="__main__":
 
     time_array = np.arange(0,10,.10)
-    problem = landingProblemTime(time_array)
+    problem = cruiseProblemTime(time_array)
     problem.solve()
 
     from trajopt.dynamics.visualization import visualizeRun2D

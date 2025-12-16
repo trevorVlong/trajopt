@@ -182,7 +182,7 @@ class AircraftTrajectoryProblem2D(Opti):
         self.PhysicsModel.add_force(thrust, 0,
                                     from_axes='body',
                                     )
-        self.PhysicsModel.add_moment(thrust * 0.1)
+        self.PhysicsModel.add_moment(thrust * 0.05)
 
         # gravity
         self.PhysicsModel.add_force(0, self.PhysicsModel.Mass * 9.81,

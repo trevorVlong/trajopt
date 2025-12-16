@@ -15,7 +15,7 @@
 
 from trajopt.main import AircraftTrajectoryProblem2D as trajp
 from trajopt.weather.WindModel2D import WindModel2D
-from trajopt.aerodynamics import ThinAirfoilModel
+from trajopt.aerodynamics.BlownAirfoilModel import BlownAirfoilModel
 from trajopt.dynamics import Aircraft2DPointMass
 from aerosandbox import numpy as np
 from aerosandbox.numpy.integrate_discrete import integrate_discrete_squared_curvature as int_desc
@@ -48,16 +48,17 @@ def cruiseProblemTime(
     PhysicsModel.TailChordMean = 0.25
     PhysicsModel.Area = 1.09
     PhysicsModel.TailArea = 0.2
+    PhysicsModel.PropulsorArea=0.06
 
 
-    AeroModel = ThinAirfoilModel()
+    AeroModel = BlownAirfoilModel()
 
     # wind model setup (simple gust)
     wind_model = WindModel2D()
 
     wind_model.setParameters(model_name='gaussian1D',
                                     **{'STD': 10,
-                                       'center': 75,
+                                       'center': 40,
                                        'MaxGustVelocity': -parameters['gust_vel'],
                                        'axis': 'z'}
                                     )
@@ -102,34 +103,48 @@ def cruiseProblemTime(
     problem.subject_to([
         problem.PhysicsModel.PitchRate[-1]**2 <= 0.1,
         problem.PhysicsModel.AccelXBody[-1]**2 <= 0.1,
-        problem.PhysicsModel.AccelZBody[-1]**2 <=0.1,
-        problem.PhysicsModel.Pitch[-1] ** 2 <= 36,
-        problem.PhysicsModel.glide_slope[-1]**2 <=0.1,
+        problem.PhysicsModel.Pitch[-1] >= 1,
+        dyn.Altitude[-1]<0.1,
+        dyn.EarthZVelocity[-1]**2 < 1,
+        (dyn.EarthXPosition[-1]-75)**2 < 25,
+        dyn.Airspeed[-1] < 3,
     ])
 
     # General Constraints
     dThrottle = np.diff(dyn.ThrottlePosition)
     dElevator = np.diff(dyn.ElevatorPosition)
+    dDCJ = np.diff(AeroModel.DeltaCJ(dyn))
     dTime = np.diff(problem.Time)
+    dMom = np.diff(dyn.My_b)
 
     throttle_rate = dThrottle/dTime
     elev_rate = dElevator/dTime
+    dcjRate = dDCJ/dTime
+    MomRate = dMom/dTime
+    dAlt = np.diff(dyn.Altitude)/dTime
 
     problem.subject_to([
         throttle_rate**2 <= 0.8,
         elev_rate**2 <= 225,
-        problem.PhysicsModel.Altitude >= 50,
-        dyn.Pitch**2 <100
+        dyn.Pitch**2 <144,
+        dyn.Pitch > -5,
+        AeroModel.DeltaCJ(dyn)>0.01,
+        AeroModel.DeltaCJ(dyn) < 6,
+        dcjRate**2 < 0.4,
     ])
 
     # optimization problem
-    curv = int_desc(dyn.ElevatorPosition, problem.Time) + int_desc(dyn.ThrottlePosition, problem.Time)
+    curv = (int_desc(dyn.ElevatorPosition, problem.Time)
+            + int_desc(dyn.ThrottlePosition, problem.Time)
+            + int_desc(AeroModel.DeltaCJ(dyn),problem.Time)
+            + int_desc(dyn.My_b,problem.Time)
+            )
 
     # cost function for the optimizer to work against
     problem.minimize(
-        1e-4 * np.sum(curv)
-        + dyn.Altitude[-1]
-        + np.mean(dyn.Airspeed)
+        1e-6 * np.sum(curv)
+        + np.sum((dyn.glide_slope - 7)**2)
+        + 10*np.sum((dyn.EarthXPosition[-1] - 75)**2)
     )
 
     return problem

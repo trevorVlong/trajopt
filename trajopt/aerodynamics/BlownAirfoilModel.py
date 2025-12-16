@@ -92,6 +92,7 @@ class BlownAirfoilModel(AeroModel):
         alfa = dynModel.Alpha
         delta_f = dynModel.FlapPosition
         delta_cj = self.DeltaCJ(dynModel)
+        # delta_cj = 0.1
         cd0 = 0.05 # zero-lift drag
 
         # cl
@@ -99,7 +100,8 @@ class BlownAirfoilModel(AeroModel):
         # cd
         cd = self.WingDragCoeffFunction(cl,delta_cj,AR) + cd0
         # cm
-        cm = self.WingMomentCoeffFunction(alfa,delta_f,delta_cj) + self.WingCmOffset
+        cm = (self.WingMomentCoeffFunction(alfa,delta_f,delta_cj)
+              + self.WingCmOffset)
 
         return cl,cd,cm
 
@@ -184,7 +186,8 @@ class BlownAirfoilModel(AeroModel):
 
 
         T = dynModel.ThrottlePosition*dynModel.Mass*9.81
-        vrat = np.sqrt(T/(0.5 * air_density*Vinf**2*Aprop) + 1)
+        # vrat = np.sqrt(T/(0.5 * air_density*Vinf**2*Aprop) + 1)
+        vrat = 0.5 * (1 + np.sqrt(1+2*T/(0.5*air_density*Vinf**2*Aprop)))
 
         return Aprop/Sref*(vrat**2-1)*(1/vrat + 1)
 

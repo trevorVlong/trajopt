@@ -1,4 +1,4 @@
-# Created by trevorlong on 11/17/25
+# Created by trevorlong on 12/8/25
 # license
 # Copyright 2025 trevorlong
 
@@ -13,20 +13,6 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Created by trevorlong on 8/12/25
-# license
-# Copyright 2025 trevorlong
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-# documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
-# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-# and to permit persons to whom the Software is furnished to do so.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-# THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
 import numpy as np
 from trajopt.example.landingBlown import cruiseProblemTime
 from trajopt.aerodynamics.courtinSurrogates import *
@@ -39,35 +25,20 @@ if TYPE_CHECKING:
 
 def monteCarloCruise(problem: 'Trajprob',
                      time_vec:np.ndarray,
-                     num_runs:int,
                      initial_conditions:dict[str,dict[str,float]],
                      ):
     initial_condition_vals = dict()
 
     # monte-carlo all the conditions in the initial condition space
-    run_deck = {}
-    for run_num in np.arange(0,num_runs):
-        for idx,condition in enumerate(initial_conditions):
-            condition_vals = initial_conditions[condition]
-            mean = condition_vals['avg']
-            std = condition_vals['std']
-
-            # if parameter is supposed to be held static use mean, otherwise monte-carlo
-            if condition_vals['static']:
-                initial_condition_vals[condition] = mean
-            else:
-                initial_condition_vals[condition] = np.random.normal(loc=mean,scale=std)
-        run_deck[run_num] = initial_condition_vals.copy()
-    # create a run deck using given parameters
-    # run problem for other gust conditions
-
+    run_deck = initial_conditions
+    num_runs = len(run_deck['InitialXPosition'])
     # create problem and problem parameters for initial conditions, gust conditions
     parameters = {}
     IC = dict()
-    for key,valdict in initial_conditions.items():
-        print(f"val:{key}: {valdict['avg']}")
-        parameters[key]=problem.parameter(valdict['avg'])
-        IC[key] = valdict['avg']
+    for key,val in initial_conditions.items():
+        print(f"{key}: {val[0]}")
+        parameters[key]=problem.parameter(val[0])
+        IC[key] = val[0]
 
     problem = cruiseProblemTime(problem,
                                 time_vec,
@@ -79,7 +50,7 @@ def monteCarloCruise(problem: 'Trajprob',
 
     data = dict()
     # do initial solve
-    sol = problem.solve(save_solution=False,max_runtime=240,max_iter=5000)
+    sol = problem.solve(save_solution=False,max_iter=5000)
     if sol.opti.return_status() == 'Solve_Succeeded':
         print('solve succeeded')
     else:
@@ -87,25 +58,27 @@ def monteCarloCruise(problem: 'Trajprob',
     data[0] = {'results':sol(problem.PhysicsModel),
                'time':sol(problem.Time),
                'solve_status': sol.opti.return_status(),
-               'initial_conditions':IC,
+               'initial_conditions': IC,
                }
     # loop through and monte carlo parameters
-    for idx,valdict in run_deck.items():
+    for idx in range(num_runs-1):
+        idx = idx+1
         print(f'--------------------------------------------')
-        print(f'This is run {idx+1}')
+        print(f'This is run {idx}')
         print(f'--------------------------------------------')
-        for key,value in valdict.items():
-            print(f"{key}: {value}")
-            problem.set_value(parameters[key],value)
+        for key,value in run_deck.items():
+            print(f"{key}: {value[idx]}")
+            problem.set_value(parameters[key],value[idx])
+            IC[key] = value[idx]
         if sol.opti.return_status() == 'Solve_Succeeded':
             problem.set_initial_from_sol(problem.ReferenceSolution)
 
-        sol = problem.solve(max_runtime=240,max_iter=3000,verbose=False)
+        sol = problem.solve(max_iter=3000,verbose=False)
         data[idx+1] = {'results':sol(problem.PhysicsModel),
                        'time':sol(problem.Time),
                        'solve_status':sol.opti.return_status(),
-                       'initial_conditions':valdict}
-        if sol.opti.return_status() == 'Solve_Succeeded':
+                       'initial_conditions': IC}
+        if sol.opti.return_status():
             print(f"Run:{idx + 1}: Success")
         else:
             print(f"Run:{idx + 1}: Fail")
@@ -118,22 +91,22 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from trajopt.main import AircraftTrajectoryProblem2D as Trajprob
 
-    file_path = "landing-monte-carlo-n-400.json"
-    num_runs = 400
+    file_path = "landing_0.4ms_gust.json"
+    num_runs = 50
     time = np.arange(0, 20, 0.2)
     parameters = {
-        "InitialXPosition":{"avg": 0,"std": 1,"static":False},
-        "InitialAltitude": {"avg": 10, "std": 2, "static": False},
-        "InitialXVelocity": {"avg": 5, "std": 1, "static": False},
-        "InitialZVelocity": {"avg": 0, "std": 0.05, "static": True},
-        "InitialPitch": {"avg": 5, "std": 2, "static": False},
-        "gust_vel": {'avg':0,"std":0.5,"static":False},
-        "InitialThrottle": {'avg':0.6,'std':0.2,'static':False},
-        "FlapAngle":{'avg':50,'std':5,'static':True}
+        "InitialXPosition":[0, 0, 0],
+        "InitialAltitude": [10, 10, 10],
+        "InitialXVelocity": [5, 5, 5],
+        "InitialZVelocity": [0,0, 0],
+        "InitialPitch": [5, 5, 5],
+        "gust_vel": [0, 0.4, -0.4],
+        "InitialThrottle": [0.7,0.7, 0.7],
+        "FlapAngle": [50, 50, 50]
     }
     cache_name = path.PosixPath('/Users/TrevorLong/Desktop/test_cache.json')
     problem = Trajprob(save_to_cache_on_solve=True,cache_filename=str(cache_name))
-    data,params = monteCarloCruise(problem,time,num_runs=num_runs, initial_conditions=parameters)
+    data,params = monteCarloCruise(problem,time, initial_conditions=parameters)
     fig,ax = plt.subplots()
     fig2,ax2 = plt.subplots()
     fig3,ax3 = plt.subplots()
