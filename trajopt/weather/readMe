@@ -1,0 +1,22 @@
+old commands
+gfortran -shared -fPIC -o gust.so using.f lamp.f
+python3 -m numpy.f2py uvsing.f -m uvsing -h uvsing.pyf  
+python3 -m numpy.f2py uvsing.f -m uvsing -h --overwrite-signature uvsing.pyf
+python3 -m numpy.f2py -c uvsing.pyf gust.so    
+
+commands that work
+1) compile and link
+
+    python -m numpy.f2py -c uvsing.pyf uvsing.f lamp.f -m uvsing
+
+2) check that namespace exists
+
+    nm -gU uvsing.cpython-312-darwin.so | grep uvsing
+
+expected output
+
+    0000000000006078 T _PyInit_uvsing
+    0000000000000f60 T _uvsing_
+
+3) check linked libraries
+    otool -L uvsing.cpython-312-darwin.so

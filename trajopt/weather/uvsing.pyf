@@ -1,0 +1,29 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module uvsing ! in 
+    interface  ! in :uvsing
+        subroutine uvsing(x,y,u,v,nsing,ising,sing,sing2,xsing,ysing,xsing2,ysing2,asing,rcore,eps) ! in :uvsing:uvsing.f
+            real,intent(in) :: x
+            real,intent(in) :: y
+            real,intent(out) :: u
+            real,intent(out) :: v
+            integer,intent(in) :: nsing
+
+            integer dimension(nsing),intent(in),depend(nsing) :: ising
+            real dimension(nsing),intent(in),depend(nsing) :: sing
+            real dimension(nsing),intent(in),depend(nsing) :: sing2
+            real dimension(nsing),intent(in),depend(nsing) :: xsing
+            real dimension(nsing),intent(in),depend(nsing) :: ysing
+            real dimension(nsing),intent(in),depend(nsing) :: xsing2
+            real dimension(nsing),intent(in),depend(nsing) :: ysing2
+            real dimension(nsing),intent(in),depend(nsing) :: asing
+            real dimension(nsing),intent(in),depend(nsing) :: rcore
+            real, intent(in) :: eps
+        end subroutine uvsing
+    end interface
+end python module uvsing
+
+! This file was auto-generated with f2py (version:2.0.2).
+! See:
+! https://web.archive.org/web/20140822061353/http://cens.ioc.ee/projects/f2py2e
